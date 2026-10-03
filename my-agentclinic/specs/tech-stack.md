@@ -1,0 +1,35 @@
+# AgentClinic Tech Stack
+
+## Framework: Laravel + Livewire
+
+### Why Laravel + Livewire?
+- **Reliability**: Battle-tested, mature framework with strong ecosystem (Mary's requirement)
+- **Full-Stack PHP**: Single language across backend and frontend logic
+- **Livewire Magic**: Real-time, interactive components without JavaScript complexity—perfect for dashboards and appointment booking
+- **Developer Experience**: Clean syntax, built-in ORM (Eloquent), migrations, and testing tools
+- **Browser Compatibility**: Modern Laravel apps work seamlessly across all current browsers (Steve's requirement)
+
+### Architecture
+- **Backend**: Laravel (PHP 8.3+)
+  - Eloquent ORM for data models (Agents, Ailments, Therapies, Appointments)
+  - API routes for future integrations
+  - Authentication & authorization
+  - Database migrations for schema evolution
+
+- **Frontend**: Blade templates + Livewire components
+  - Server-rendered with client-side interactivity
+  - Dashboard for agents and staff
+  - Appointment booking UI
+  - Real-time updates without page reloads
+
+- **Database**: MySQL/PostgreSQL
+  - Structured schema for agents, ailments, therapies, appointments
+  - Audit trail for compliance
+
+### Deployment
+- Single Laravel application deployed on standard PHP hosting or containerized (Docker)
+- CDN for static assets
+- Minimal DevOps complexity
+
+### Rationale vs. Original TypeScript Plan
+TypeScript is popular, but Laravel + Livewire delivers the same goals (reliable, popular, dashboard-friendly) with less frontend/backend coordination overhead and stronger built-in features for real-time features.
