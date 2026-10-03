@@ -14,6 +14,7 @@ Out of scope: ailments, therapies, appointments, notifications, reporting (Phase
 - **Auth**: Laravel Breeze, Livewire stack.
 - **Roles**: only staff log in. `users` has a `role` (`admin`, `therapist`). Agents are records in an `agents` table that staff manage; agents have no login in this phase.
 - **Database**: Postgres via Docker from day one, to match production.
+- **Environment**: fully containerized with Laravel Sail (`compose.yaml`, services `laravel.test` and `pgsql`). Host needs only Docker; PHP/Composer/Node run in containers. Chosen after host-side Composer failed on GitHub auth/timeouts and a custom Dockerfile build failed on slow apt downloads.
 - **Testing**: PHPUnit feature tests.
 - **Tone**: satirical, warm, per `specs/mission.md`.
 

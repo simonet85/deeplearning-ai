@@ -3,18 +3,21 @@
 The work can merge when all of the following hold.
 
 ## Automated
-- [ ] `php artisan migrate:fresh --seed` succeeds against the Docker Postgres database.
-- [ ] `php artisan test` passes (PHPUnit).
-- [ ] Tests cover: staff login/logout, unauthenticated redirect, role-restricted access, dashboard renders seeded agents, seeders create expected records.
+- [x] `sail artisan migrate:fresh --seed` succeeds against the Docker Postgres database.
+- [x] `sail test` passes (PHPUnit): 34 tests, 91 assertions.
+- [x] Tests cover: staff login/logout (Breeze auth tests), unauthenticated redirect, role-restricted access, dashboard renders seeded agents, seeders create expected records.
 
 ## Manual
-- [ ] `docker compose up` plus the documented steps gives a working app from a clean checkout.
-- [ ] Log in as seeded admin and therapist; both reach the dashboard.
-- [ ] Guest visiting the dashboard is redirected to login.
-- [ ] Dashboard lists the seeded agents and reads as witty and warm per `specs/mission.md`.
-- [ ] Layout renders correctly in current Chrome, Firefox, and Safari, and at mobile width.
+- [ ] `sail up -d` plus the documented steps gives a working app from a clean checkout, with only Docker installed on the host. (Not yet run from a clean checkout; the README steps are untested on Windows.)
+- [x] Log in as seeded admin and therapist; both reach the dashboard. (Verified in Chrome, desktop and mobile.)
+- [x] Guest visiting the dashboard is redirected to login.
+- [x] Dashboard lists the seeded agents and reads as witty and warm per `specs/mission.md`. (Five agents render; tone is a human judgment call.)
+- [ ] Layout renders correctly in current Chrome, Firefox, and Safari, and at mobile width. (Chrome desktop and 390px mobile verified, no horizontal scroll or JS errors. Firefox and Safari not tested.)
 
 ## Hygiene
-- [ ] No leftover TypeScript scaffold files.
-- [ ] `.env` is not committed; `.env.example` is.
-- [ ] README documents setup.
+- [x] No leftover TypeScript scaffold files.
+- [x] `.env` is not committed; `.env.example` is.
+- [x] README documents setup.
+
+## Branding
+- [x] The default Laravel logo is replaced with an AgentClinic clinic-cross mark (navigation and login page).
