@@ -4,8 +4,10 @@ The work can merge when all of the following hold.
 
 ## Automated
 - [x] `sail artisan migrate:fresh --seed` succeeds against the Docker Postgres database.
-- [x] `sail test` passes (PHPUnit): 34 tests, 91 assertions.
-- [x] Tests cover: staff login/logout (Breeze auth tests), unauthenticated redirect, role-restricted access, dashboard renders seeded agents, seeders create expected records.
+- [x] `sail test` passes (PHPUnit): 43 tests, 132 assertions. This is the merge gate.
+- [x] `sail composer test:coverage` passes with 100% line coverage of `app/`.
+- [x] Tests cover: staff login/logout (Breeze auth tests), unauthenticated redirect, role-restricted access, dashboard renders seeded agents, seeders create expected records, layout landmarks and stylesheet link.
+- [x] Livewire component tests cover the agent list (ordering, fields, empty state), and unit tests cover the `User` role helpers.
 
 ## Manual
 - [ ] `sail up -d` plus the documented steps gives a working app from a clean checkout, with only Docker installed on the host. (Not yet run from a clean checkout; the README steps are untested on Windows.)

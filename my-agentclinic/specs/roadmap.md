@@ -80,7 +80,7 @@ Completes the core user journey. Shows ROI to stakeholders. Provides real usage 
 - **End of Phase 3**: Full appointment booking loop functional
 
 ## Success Criteria
-- Dashboard loads fast (&lt;1s)
-- Booking completes in &lt;5 clicks
+- Dashboard loads fast (<1s)
+- Booking completes in <5 clicks
 - All browsers (Safari, Chrome, Firefox) render correctly
-- Zero test coverage on Phase 1–3 critical paths (added later)
+- Every phase ships with passing tests (PHPUnit plus Livewire component tests, per `tech-stack.md`); `sail test` passes before any merge

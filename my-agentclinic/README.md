@@ -24,4 +24,6 @@ Then open http://localhost. On Windows, run `sail` from WSL, or use `docker comp
 
 Seeded staff (password `password`): `admin@agentclinic.test` (admin), `sam@agentclinic.test` and `riley@agentclinic.test` (therapists). Registration is disabled; only staff log in.
 
-Common commands: `sail test`, `sail artisan migrate:fresh --seed`, `sail down`.
+Common commands: `sail artisan migrate:fresh --seed`, `sail down`.
+
+Tests: `sail test` runs the PHPUnit suite (feature, Livewire component and unit tests) against a separate `testing` database. `sail composer test:coverage` enforces 100% line coverage of `app/`. Both must pass before merging.

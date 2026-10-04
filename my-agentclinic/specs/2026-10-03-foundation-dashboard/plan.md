@@ -39,4 +39,8 @@ Laravel Sail (the official Docker environment) provides PHP, Composer, Node and 
 
 ## 7. Tests and wrap-up
 1. PHPUnit feature tests: login, role access, dashboard rendering, seeders, layout.
-2. Update `README.md` with setup instructions.
+2. Livewire component tests: `Volt::test('agent-list')` for ordering, fields and the empty state.
+3. Unit tests: `User` role helpers (`hasRole`, `isAdmin`), with no database.
+4. Cover the auth edge cases (login lockout after five failures, already-verified email redirect) and delete the unused `GuestLayout` class.
+5. Add a `test:coverage` composer script (`--min=100`); run `sail test` and `sail composer test:coverage` and keep both green. They are the merge gate.
+6. Update `README.md` with setup instructions.

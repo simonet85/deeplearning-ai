@@ -24,12 +24,6 @@ class RoleTest extends TestCase
         $this->assertSame(Role::Therapist, User::factory()->create()->fresh()->role);
     }
 
-    public function test_role_helpers(): void
-    {
-        $this->assertTrue(User::factory()->admin()->make()->isAdmin());
-        $this->assertFalse(User::factory()->make()->isAdmin());
-    }
-
     public function test_admin_can_reach_admin_only_routes(): void
     {
         $this->actingAs(User::factory()->admin()->create())
