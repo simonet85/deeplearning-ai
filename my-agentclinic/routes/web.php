@@ -19,7 +19,8 @@ Route::middleware(['auth', 'verified', 'role:admin,therapist'])->group(function 
 
 // Agent area: agents only, and every page shows only the signed-in agent's own data.
 Route::middleware(['auth', 'verified', 'role:agent'])->prefix('me')->group(function () {
-    Route::redirect('/', '/me/ailments')->name('agent.home');
+    Route::redirect('/', '/me/appointments')->name('agent.home');
+    Route::view('appointments', 'my-appointments')->name('agent.appointments');
     Route::view('ailments', 'my-ailments')->name('agent.ailments');
 });
 

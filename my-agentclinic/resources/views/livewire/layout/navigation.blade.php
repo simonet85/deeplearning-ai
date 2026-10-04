@@ -48,6 +48,9 @@ new class extends Component
                     </x-nav-link>
                     @endunless
                     @if (auth()->user()->isAgent())
+                    <x-nav-link :href="route('agent.appointments')" :active="request()->routeIs('agent.appointments')" wire:navigate>
+                        {{ __('My appointments') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('agent.ailments')" :active="request()->routeIs('agent.ailments')" wire:navigate>
                         {{ __('My ailments') }}
                     </x-nav-link>
@@ -118,6 +121,9 @@ new class extends Component
             </x-responsive-nav-link>
             @endunless
             @if (auth()->user()->isAgent())
+            <x-responsive-nav-link :href="route('agent.appointments')" :active="request()->routeIs('agent.appointments')" wire:navigate>
+                {{ __('My appointments') }}
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('agent.ailments')" :active="request()->routeIs('agent.ailments')" wire:navigate>
                 {{ __('My ailments') }}
             </x-responsive-nav-link>

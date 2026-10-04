@@ -1,7 +1,7 @@
 <?php
 
 use App\Actions\BookAppointment;
-use App\Enums\AppointmentStatus;
+use App\Actions\CancelAppointment;
 use App\Enums\Role;
 use App\Models\Agent;
 use App\Models\Appointment;
@@ -109,14 +109,7 @@ new class extends Component
 
     public function cancel(int $id): void
     {
-        $appointment = Appointment::findOrFail($id);
-
-        if ($appointment->status === AppointmentStatus::Booked) {
-            $appointment->update([
-                'status' => AppointmentStatus::Cancelled,
-                'availability_id' => null,
-            ]);
-        }
+        app(CancelAppointment::class)->handle(Appointment::findOrFail($id));
 
         unset($this->openSlots, $this->upcoming, $this->past);
         $this->dispatch('appointments-changed');
