@@ -36,6 +36,11 @@ Route::middleware(['auth', 'verified'])->prefix('me')->group(function () {
     Route::view('ailments', 'my-ailments')->middleware('can:my-ailments.use')->name('agent.ailments');
 });
 
+// Administration: who may do what.
+Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
+    Route::view('roles', 'roles')->middleware('can:roles.manage')->name('admin.roles');
+});
+
 // Profile photos are served by a route that checks who is asking; see UserPhotoController.
 Route::get('users/{user}/photo', UserPhotoController::class)
     ->middleware(['auth'])

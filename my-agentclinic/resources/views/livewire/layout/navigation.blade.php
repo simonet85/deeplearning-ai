@@ -74,6 +74,11 @@ new class extends Component
                             {{ __('My ailments') }}
                         </x-nav-link>
                     @endcan
+                    @can('roles.manage')
+                        <x-nav-link :href="route('admin.roles')" :active="request()->routeIs('admin.roles')" wire:navigate>
+                            {{ __('Roles') }}
+                        </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
@@ -156,6 +161,11 @@ new class extends Component
             @can('my-ailments.use')
                 <x-responsive-nav-link :href="route('agent.ailments')" :active="request()->routeIs('agent.ailments')" wire:navigate>
                     {{ __('My ailments') }}
+                </x-responsive-nav-link>
+            @endcan
+            @can('roles.manage')
+                <x-responsive-nav-link :href="route('admin.roles')" :active="request()->routeIs('admin.roles')" wire:navigate>
+                    {{ __('Roles') }}
                 </x-responsive-nav-link>
             @endcan
         </div>
