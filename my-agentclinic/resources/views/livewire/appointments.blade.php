@@ -2,7 +2,6 @@
 
 use App\Actions\BookAppointment;
 use App\Actions\CancelAppointment;
-use App\Enums\Role;
 use App\Models\Agent;
 use App\Models\Appointment;
 use App\Models\Availability;
@@ -52,7 +51,7 @@ new class extends Component
     #[Computed]
     public function therapists(): Collection
     {
-        return User::where('role', Role::Therapist)->orderBy('name')->get();
+        return User::permission('availability.manage')->orderBy('name')->get();
     }
 
     /** @return Collection<int, Appointment> */
@@ -90,6 +89,8 @@ new class extends Component
 
     public function book(): void
     {
+        abort_unless(auth()->user()->can('appointments.manage'), 403);
+
         $this->validate([
             'agentId' => ['required', 'exists:agents,id'],
             'therapyId' => ['required', 'exists:therapies,id'],
@@ -109,6 +110,8 @@ new class extends Component
 
     public function cancel(int $id): void
     {
+        abort_unless(auth()->user()->can('appointments.manage'), 403);
+
         app(CancelAppointment::class)->handle(Appointment::findOrFail($id));
 
         unset($this->openSlots, $this->upcoming, $this->past);
@@ -117,6 +120,7 @@ new class extends Component
 }; ?>
 
 <div class="space-y-8">
+    @can('appointments.manage')
     <form wire:submit="book" class="grid gap-4 sm:grid-cols-3">
         <h3 class="text-lg font-semibold text-gray-800 sm:col-span-3">{{ __('Book an appointment') }}</h3>
 
@@ -157,6 +161,7 @@ new class extends Component
             <x-primary-button>{{ __('Book appointment') }}</x-primary-button>
         </div>
     </form>
+    @endcan
 
     <div class="grid gap-4 sm:grid-cols-4">
         <div>
@@ -209,7 +214,7 @@ new class extends Component
                     @if ($appointment->reminder_sent_at)
                         <p class="mt-1 text-xs text-gray-500">{{ __('Reminder sent') }} {{ $appointment->reminder_sent_at->format('M j, H:i') }}</p>
                     @endif
-                    @if ($appointment->status === \App\Enums\AppointmentStatus::Booked)
+                    @if ($appointment->status === \App\Enums\AppointmentStatus::Booked && auth()->user()->can('appointments.manage'))
                         <div class="mt-3">
                             <x-secondary-button type="button" wire:click="cancel({{ $appointment->id }})" wire:confirm="{{ __('Cancel this appointment?') }}">{{ __('Cancel') }}</x-secondary-button>
                         </div>

@@ -39,31 +39,41 @@ new class extends Component
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    @unless (auth()->user()->isAgent())
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('ailments')" :active="request()->routeIs('ailments')" wire:navigate>
-                        {{ __('Ailments') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('therapies')" :active="request()->routeIs('therapies')" wire:navigate>
-                        {{ __('Therapies') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('availability')" :active="request()->routeIs('availability')" wire:navigate>
-                        {{ __('Availability') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('appointments')" :active="request()->routeIs('appointments')" wire:navigate>
-                        {{ __('Appointments') }}
-                    </x-nav-link>
-                    @endunless
-                    @if (auth()->user()->isAgent())
-                    <x-nav-link :href="route('agent.appointments')" :active="request()->routeIs('agent.appointments')" wire:navigate>
-                        {{ __('My appointments') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('agent.ailments')" :active="request()->routeIs('agent.ailments')" wire:navigate>
-                        {{ __('My ailments') }}
-                    </x-nav-link>
-                    @endif
+                    @can('dashboard.view')
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+                    @endcan
+                    @can('ailments.view')
+                        <x-nav-link :href="route('ailments')" :active="request()->routeIs('ailments')" wire:navigate>
+                            {{ __('Ailments') }}
+                        </x-nav-link>
+                    @endcan
+                    @can('therapies.view')
+                        <x-nav-link :href="route('therapies')" :active="request()->routeIs('therapies')" wire:navigate>
+                            {{ __('Therapies') }}
+                        </x-nav-link>
+                    @endcan
+                    @can('availability.view')
+                        <x-nav-link :href="route('availability')" :active="request()->routeIs('availability')" wire:navigate>
+                            {{ __('Availability') }}
+                        </x-nav-link>
+                    @endcan
+                    @can('appointments.view')
+                        <x-nav-link :href="route('appointments')" :active="request()->routeIs('appointments')" wire:navigate>
+                            {{ __('Appointments') }}
+                        </x-nav-link>
+                    @endcan
+                    @can('my-appointments.use')
+                        <x-nav-link :href="route('agent.appointments')" :active="request()->routeIs('agent.appointments')" wire:navigate>
+                            {{ __('My appointments') }}
+                        </x-nav-link>
+                    @endcan
+                    @can('my-ailments.use')
+                        <x-nav-link :href="route('agent.ailments')" :active="request()->routeIs('agent.ailments')" wire:navigate>
+                            {{ __('My ailments') }}
+                        </x-nav-link>
+                    @endcan
                 </div>
             </div>
 
@@ -113,31 +123,41 @@ new class extends Component
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            @unless (auth()->user()->isAgent())
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('ailments')" :active="request()->routeIs('ailments')" wire:navigate>
-                {{ __('Ailments') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('therapies')" :active="request()->routeIs('therapies')" wire:navigate>
-                {{ __('Therapies') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('availability')" :active="request()->routeIs('availability')" wire:navigate>
-                {{ __('Availability') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('appointments')" :active="request()->routeIs('appointments')" wire:navigate>
-                {{ __('Appointments') }}
-            </x-responsive-nav-link>
-            @endunless
-            @if (auth()->user()->isAgent())
-            <x-responsive-nav-link :href="route('agent.appointments')" :active="request()->routeIs('agent.appointments')" wire:navigate>
-                {{ __('My appointments') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('agent.ailments')" :active="request()->routeIs('agent.ailments')" wire:navigate>
-                {{ __('My ailments') }}
-            </x-responsive-nav-link>
-            @endif
+            @can('dashboard.view')
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+            @endcan
+            @can('ailments.view')
+                <x-responsive-nav-link :href="route('ailments')" :active="request()->routeIs('ailments')" wire:navigate>
+                    {{ __('Ailments') }}
+                </x-responsive-nav-link>
+            @endcan
+            @can('therapies.view')
+                <x-responsive-nav-link :href="route('therapies')" :active="request()->routeIs('therapies')" wire:navigate>
+                    {{ __('Therapies') }}
+                </x-responsive-nav-link>
+            @endcan
+            @can('availability.view')
+                <x-responsive-nav-link :href="route('availability')" :active="request()->routeIs('availability')" wire:navigate>
+                    {{ __('Availability') }}
+                </x-responsive-nav-link>
+            @endcan
+            @can('appointments.view')
+                <x-responsive-nav-link :href="route('appointments')" :active="request()->routeIs('appointments')" wire:navigate>
+                    {{ __('Appointments') }}
+                </x-responsive-nav-link>
+            @endcan
+            @can('my-appointments.use')
+                <x-responsive-nav-link :href="route('agent.appointments')" :active="request()->routeIs('agent.appointments')" wire:navigate>
+                    {{ __('My appointments') }}
+                </x-responsive-nav-link>
+            @endcan
+            @can('my-ailments.use')
+                <x-responsive-nav-link :href="route('agent.ailments')" :active="request()->routeIs('agent.ailments')" wire:navigate>
+                    {{ __('My ailments') }}
+                </x-responsive-nav-link>
+            @endcan
         </div>
 
         <!-- Responsive Settings Options -->

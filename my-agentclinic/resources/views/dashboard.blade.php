@@ -14,7 +14,7 @@
                     </p>
                     <p class="mt-1 text-gray-600">
                         {{ __('Take a breath. The humans are not in this room.') }}
-                        <span class="ms-1 rounded bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">{{ ucfirst(auth()->user()->role->value) }}</span>
+                        <span class="ms-1 rounded bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">{{ ucfirst((string) auth()->user()->getRoleNames()->first()) }}</span>
                     </p>
                 </div>
             </div>

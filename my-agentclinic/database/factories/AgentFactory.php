@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Enums\Role;
 use App\Models\Agent;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -24,6 +23,6 @@ class AgentFactory extends Factory
     /** An agent record owned by a (bare) agent account. */
     public function forUser(): static
     {
-        return $this->state(fn () => ['user_id' => User::factory(['role' => Role::Agent])]);
+        return $this->state(fn () => ['user_id' => User::factory()->agentAccount()]);
     }
 }

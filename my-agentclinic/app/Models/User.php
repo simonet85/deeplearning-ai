@@ -3,7 +3,6 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Enums\Role;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -12,8 +11,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'role', 'profile_photo_path'])]
+#[Fillable(['name', 'email', 'password', 'profile_photo_path'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -21,7 +21,7 @@ class User extends Authenticatable
     public const PHOTO_DISK = 'profile_photos';
 
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, HasRoles, Notifiable;
 
     /**
      * Get the attributes that should be cast.
@@ -33,7 +33,6 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'role' => Role::class,
         ];
     }
 
@@ -47,20 +46,5 @@ class User extends Authenticatable
     public function agent(): HasOne
     {
         return $this->hasOne(Agent::class);
-    }
-
-    public function isAgent(): bool
-    {
-        return $this->hasRole(Role::Agent);
-    }
-
-    public function hasRole(Role ...$roles): bool
-    {
-        return in_array($this->role, $roles, true);
-    }
-
-    public function isAdmin(): bool
-    {
-        return $this->hasRole(Role::Admin);
     }
 }

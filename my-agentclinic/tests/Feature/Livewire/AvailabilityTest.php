@@ -118,8 +118,9 @@ class AvailabilityTest extends TestCase
             ->call('save')
             ->assertHasErrors(['therapistId' => 'required']);
 
+        // Only users who may own slots can be chosen: an agent account cannot.
         Volt::actingAs($admin)->test('availability')
-            ->set('therapistId', $admin->id)
+            ->set('therapistId', User::factory()->agent()->create()->id)
             ->set('date', $this->tomorrow())
             ->set('timeSlot', '09:00')
             ->call('save')

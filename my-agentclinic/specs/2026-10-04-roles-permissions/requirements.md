@@ -26,7 +26,7 @@ Out of scope: teams or multi-tenancy, per-record permissions (for example "only 
 | `roles.manage` | Open the Roles page and change roles and their permissions |
 
 Default roles (re-created by the seeder, and by a migration for existing data):
-- **admin**: every permission.
+- **admin**: every permission except the two agent-area ones (`my-ailments.use`, `my-appointments.use`). Those pages show the signed-in user's own agent record, so an administrator gets them only if given an agent role as well. A permission added in a later version is given to the administrator unless it belongs to the agent area.
 - **therapist**: `dashboard.view`, `ailments.view`, `ailments.manage`, `therapies.view`, `availability.view`, `availability.manage`, `appointments.view`, `appointments.manage`. This matches what therapists can do today.
 - **agent**: `my-ailments.use`, `my-appointments.use`. This matches what agents can do today.
 

@@ -5,24 +5,35 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
 
-// Agents have their own area; the staff dashboard sends them there.
-Route::get('dashboard', fn () => auth()->user()->isAgent() ? redirect()->route('agent.home') : view('dashboard'))
+// The staff dashboard. Someone who can only use the agent area is sent there; anyone else without the
+// permission gets a 403.
+Route::get('dashboard', function () {
+    $user = auth()->user();
+
+    if ($user->can('dashboard.view')) {
+        return view('dashboard');
+    }
+
+    abort_unless($user->can('my-appointments.use'), 403);
+
+    return redirect()->route('agent.home');
+})
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-// Staff pages: administrators and therapists only.
-Route::middleware(['auth', 'verified', 'role:admin,therapist'])->group(function () {
-    Route::view('ailments', 'ailments')->name('ailments');
-    Route::view('therapies', 'therapies')->name('therapies');
-    Route::view('availability', 'availability')->name('availability');
-    Route::view('appointments', 'appointments')->name('appointments');
+// Staff pages: each needs its own permission (see App\Support\Access).
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::view('ailments', 'ailments')->middleware('can:ailments.view')->name('ailments');
+    Route::view('therapies', 'therapies')->middleware('can:therapies.view')->name('therapies');
+    Route::view('availability', 'availability')->middleware('can:availability.view')->name('availability');
+    Route::view('appointments', 'appointments')->middleware('can:appointments.view')->name('appointments');
 });
 
-// Agent area: agents only, and every page shows only the signed-in agent's own data.
-Route::middleware(['auth', 'verified', 'role:agent'])->prefix('me')->group(function () {
-    Route::redirect('/', '/me/appointments')->name('agent.home');
-    Route::view('appointments', 'my-appointments')->name('agent.appointments');
-    Route::view('ailments', 'my-ailments')->name('agent.ailments');
+// Agent area: every page shows only the signed-in agent's own data.
+Route::middleware(['auth', 'verified'])->prefix('me')->group(function () {
+    Route::redirect('/', '/me/appointments')->middleware('can:my-appointments.use')->name('agent.home');
+    Route::view('appointments', 'my-appointments')->middleware('can:my-appointments.use')->name('agent.appointments');
+    Route::view('ailments', 'my-ailments')->middleware('can:my-ailments.use')->name('agent.ailments');
 });
 
 // Profile photos are served by a route that checks who is asking; see UserPhotoController.

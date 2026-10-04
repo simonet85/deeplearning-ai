@@ -168,7 +168,7 @@ class MyAppointmentsTest extends TestCase
 
     public function test_an_agent_account_without_a_record_is_refused(): void
     {
-        Volt::actingAs(User::factory()->create(['role' => \App\Enums\Role::Agent]))
+        Volt::actingAs(User::factory()->agentAccount()->create())
             ->test('my-appointments')
             ->assertForbidden();
     }

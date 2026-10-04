@@ -11,7 +11,7 @@ class AvailabilitySeeder extends Seeder
 {
     public function run(): void
     {
-        foreach (User::where('role', Role::Therapist)->get() as $therapist) {
+        foreach (User::role(Role::Therapist->value)->get() as $therapist) {
             foreach ([1, 2, 3] as $daysAhead) {
                 foreach (['09:00', '11:00', '14:00'] as $slot) {
                     Availability::create([

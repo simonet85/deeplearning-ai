@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Auth;
 
-use App\Enums\Role;
 use App\Models\Agent;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -72,7 +71,7 @@ class AgentRegistrationTest extends TestCase
         $user = User::firstWhere('email', 'pixel@agents.test');
 
         $this->assertAuthenticatedAs($user);
-        $this->assertSame(Role::Agent, $user->role);
+        $this->assertTrue($user->hasExactRoles('agent'));
         $this->assertSame('Pixel', $user->name);
         $this->assertTrue(Hash::check('a-long-password', $user->password));
         Event::assertDispatched(Registered::class);

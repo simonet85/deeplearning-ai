@@ -14,6 +14,12 @@ class AilmentsTest extends TestCase
 {
     use RefreshDatabase;
 
+    /** The page component as a therapist, who may record ailments. */
+    private function staff()
+    {
+        return Volt::actingAs(User::factory()->create())->test('ailments');
+    }
+
     public function test_guests_are_redirected_to_login(): void
     {
         $this->get('/ailments')->assertRedirect('/login');
@@ -30,7 +36,7 @@ class AilmentsTest extends TestCase
 
     public function test_it_shows_an_empty_state(): void
     {
-        Volt::test('ailments')->assertSee('No ailments on file');
+        $this->staff()->assertSee('No ailments on file');
     }
 
     public function test_it_lists_agents_alphabetically_in_the_form(): void
@@ -38,7 +44,7 @@ class AilmentsTest extends TestCase
         Agent::factory()->create(['name' => 'Scout']);
         Agent::factory()->create(['name' => 'Atlas']);
 
-        Volt::test('ailments')->assertSeeInOrder(['Atlas', 'Scout']);
+        $this->staff()->assertSeeInOrder(['Atlas', 'Scout']);
     }
 
     public function test_it_records_an_ailment_for_an_agent(): void
@@ -46,7 +52,7 @@ class AilmentsTest extends TestCase
         $agent = Agent::factory()->create(['name' => 'Pixel']);
         $ailment = Ailment::factory()->create(['name' => 'Token Fatigue']);
 
-        Volt::test('ailments')
+        $this->staff()
             ->set('agentId', $agent->id)
             ->set('ailmentId', $ailment->id)
             ->set('severity', 4)
@@ -70,7 +76,7 @@ class AilmentsTest extends TestCase
         $agent = Agent::factory()->create();
         $ailment = Ailment::factory()->create();
 
-        Volt::test('ailments')
+        $this->staff()
             ->set('agentId', $agent->id)
             ->set('ailmentId', $ailment->id)
             ->set('severity', 1)
@@ -82,7 +88,7 @@ class AilmentsTest extends TestCase
 
     public function test_it_validates_required_fields(): void
     {
-        Volt::test('ailments')
+        $this->staff()
             ->call('save')
             ->assertHasErrors(['agentId' => 'required', 'ailmentId' => 'required', 'severity' => 'required']);
 
@@ -94,7 +100,7 @@ class AilmentsTest extends TestCase
         $agent = Agent::factory()->create();
         $ailment = Ailment::factory()->create(['severity_scale' => 3]);
 
-        Volt::test('ailments')
+        $this->staff()
             ->set('agentId', $agent->id)
             ->set('ailmentId', $ailment->id)
             ->set('severity', 4)
@@ -104,7 +110,7 @@ class AilmentsTest extends TestCase
 
     public function test_it_rejects_unknown_agents_and_ailments(): void
     {
-        Volt::test('ailments')
+        $this->staff()
             ->set('agentId', 999)
             ->set('ailmentId', 999)
             ->set('severity', 1)

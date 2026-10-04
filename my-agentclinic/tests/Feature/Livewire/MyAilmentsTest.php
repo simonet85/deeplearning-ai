@@ -141,7 +141,7 @@ class MyAilmentsTest extends TestCase
 
     public function test_an_agent_account_without_a_record_is_refused(): void
     {
-        $user = User::factory()->create(['role' => \App\Enums\Role::Agent]);
+        $user = User::factory()->agentAccount()->create();
 
         Volt::actingAs($user)->test('my-ailments')->assertForbidden();
     }

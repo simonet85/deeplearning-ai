@@ -40,7 +40,9 @@ new class extends Component
 
     public function save(): void
     {
-        $validated = $this->validate([
+        abort_unless(auth()->user()->can('ailments.manage'), 403);
+
+        $validated =$this->validate([
             'agentId' => ['required', 'exists:agents,id'],
             'ailmentId' => ['required', 'exists:ailments,id'],
             'severity' => ['required', 'integer', 'min:1', 'max:'.(Ailment::find($this->ailmentId)?->severity_scale ?? 5)],
@@ -60,6 +62,7 @@ new class extends Component
 }; ?>
 
 <div class="space-y-8">
+    @can('ailments.manage')
     <form wire:submit="save" class="grid gap-4 sm:grid-cols-2">
         <div>
             <x-input-label for="agentId" :value="__('Patient')" />
@@ -99,6 +102,7 @@ new class extends Component
             <x-primary-button>{{ __('Record ailment') }}</x-primary-button>
         </div>
     </form>
+    @endcan
 
     <div>
         <h3 class="text-lg font-semibold text-gray-800">{{ __('Recorded ailments') }}</h3>

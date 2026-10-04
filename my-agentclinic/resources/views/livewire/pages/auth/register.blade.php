@@ -1,8 +1,8 @@
 <?php
 
-use App\Enums\Role;
 use App\Models\Agent;
 use App\Models\User;
+use App\Support\Access;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -45,8 +45,9 @@ new #[Layout('layouts.guest')] class extends Component
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => $validated['password'],
-                'role' => Role::Agent,
             ]);
+
+            $user->assignRole(Access::role('agent'));
 
             Agent::create([
                 'user_id' => $user->id,

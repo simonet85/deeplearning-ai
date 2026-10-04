@@ -2,10 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Enums\Role;
-use App\Http\Middleware\EnsureUserHasRole;
 use App\Models\Agent;
 use App\Models\User;
+use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -89,19 +88,17 @@ class AgentAccessTest extends TestCase
         }
     }
 
-    public function test_the_role_check_also_applies_to_livewire_update_requests(): void
+    public function test_the_permission_check_also_applies_to_livewire_update_requests(): void
     {
-        $this->assertContains(EnsureUserHasRole::class, Livewire::getPersistentMiddleware());
+        $this->assertContains(Authorize::class, Livewire::getPersistentMiddleware());
     }
 
-    public function test_the_agent_role_helpers(): void
+    public function test_the_factory_gives_each_kind_of_user_the_right_role(): void
     {
-        $agent = User::factory()->agent()->create();
-
-        $this->assertTrue($agent->isAgent());
-        $this->assertSame(Role::Agent, $agent->fresh()->role);
-        $this->assertFalse(User::factory()->create()->isAgent());
-        $this->assertFalse(User::factory()->admin()->create()->isAgent());
+        $this->assertTrue(User::factory()->agent()->create()->hasExactRoles('agent'));
+        $this->assertTrue(User::factory()->agentAccount()->create()->hasExactRoles('agent'));
+        $this->assertTrue(User::factory()->create()->hasExactRoles('therapist'));
+        $this->assertTrue(User::factory()->admin()->create()->hasExactRoles('admin'));
     }
 
     public function test_an_agent_account_is_linked_to_its_agent_record(): void
@@ -119,7 +116,8 @@ class AgentAccessTest extends TestCase
         $agent = Agent::factory()->forUser()->create();
 
         $this->assertSame(1, Agent::count());
-        $this->assertSame(Role::Agent, $agent->user->role);
+        $this->assertTrue($agent->user->hasExactRoles('agent'));
+        $this->assertTrue($agent->user->agent->is($agent));
     }
 
     public function test_staff_created_agents_need_no_account(): void
