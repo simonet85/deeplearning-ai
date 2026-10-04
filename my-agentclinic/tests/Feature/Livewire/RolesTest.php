@@ -292,6 +292,46 @@ class RolesTest extends TestCase
         $this->assertSame(['dashboard.view'], $this->permissionsOf($therapist));
     }
 
+    public function test_a_change_that_would_leave_nobody_able_to_manage_access_is_undone(): void
+    {
+        Access::sync();
+        // No administrator exists; one person manages everything through a custom role.
+        $ops = $this->custom('ops', ['users.manage', 'roles.manage', 'ailments.view']);
+        $operator = User::factory()->create();
+        $operator->syncRoles($ops);
+
+        $this->page($operator)
+            ->set('selected.'.$ops->id, ['users.manage', 'ailments.view'])
+            ->call('savePermissions', $ops->id)
+            ->assertHasErrors('role.'.$ops->id)
+            ->assertSee('nobody able to manage users and roles')
+            ->assertNotDispatched('permissions-saved');
+
+        $this->assertSame(['ailments.view', 'roles.manage', 'users.manage'], $this->permissionsOf($ops));
+
+        $this->page($operator)
+            ->set('selected.'.$ops->id, ['roles.manage'])
+            ->call('savePermissions', $ops->id)
+            ->assertHasErrors('role.'.$ops->id);
+
+        $this->assertSame(['ailments.view', 'roles.manage', 'users.manage'], $this->permissionsOf($ops));
+    }
+
+    public function test_the_same_change_is_fine_when_an_administrator_still_exists(): void
+    {
+        $ops = $this->custom('ops', ['users.manage', 'roles.manage']);
+        User::factory()->admin()->create();
+        $operator = User::factory()->create();
+        $operator->syncRoles($ops);
+
+        $this->page($operator)
+            ->set('selected.'.$ops->id, [])
+            ->call('savePermissions', $ops->id)
+            ->assertHasNoErrors();
+
+        $this->assertSame([], $this->permissionsOf($ops));
+    }
+
     // ---- deleting ----
 
     public function test_an_empty_custom_role_can_be_deleted(): void

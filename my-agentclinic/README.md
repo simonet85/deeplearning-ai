@@ -48,7 +48,20 @@ Agent pages (agents only; staff get a 403). Agents sign up themselves at `/regis
 | My ailments | `/me/ailments` | Record your own ailments and see your history |
 | Profile | `/profile` | Add or change your profile photo; change your name, e-mail, agent type, bio and password; or delete your account (your agent record and history stay with the clinic) |
 
+Administration pages (need the `users.manage` / `roles.manage` permission; administrators have both):
+
+| Page | Path | What it does |
+| --- | --- | --- |
+| Users | `/admin/users` | Search accounts, change a user's role, and grant extra permissions on top of the role |
+| Roles | `/admin/roles` | Add, rename and delete roles, and tick the permissions each role has |
+
 Booking is atomic: a slot can only be booked once, and cancelling frees it. Removing a booked slot is blocked until the appointment is cancelled.
+
+### Roles and permissions
+
+Access is decided by permissions, handled with [spatie/laravel-permission](https://spatie.be/docs/laravel-permission). There are 14 permissions grouped by domain (dashboard, ailments, therapies, availability, appointments, the agent area, administration), listed with their labels in `app/Support/Access.php`. Three roles ship with the app and cannot be renamed or deleted: **admin** (every staff and administration permission), **therapist** (the staff pages, without managing therapies or other people's availability) and **agent** (the agent area). Administrators can add their own roles on the Roles page and give people a different role, or extra permissions, on the Users page.
+
+A few rules keep everyone from being locked out: the admin role always keeps `users.manage` and `roles.manage`, nobody can change their own role or permissions, and a change to a role that would leave no one able to manage users and roles is undone. Giving someone a role with agent-area permissions creates their agent record. `sail artisan db:seed --class=RolesAndPermissionsSeeder` re-creates anything missing without touching changes you made.
 
 ### Profile photos
 

@@ -38,6 +38,7 @@ Route::middleware(['auth', 'verified'])->prefix('me')->group(function () {
 
 // Administration: who may do what.
 Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
+    Route::view('users', 'users')->middleware('can:users.manage')->name('admin.users');
     Route::view('roles', 'roles')->middleware('can:roles.manage')->name('admin.roles');
 });
 

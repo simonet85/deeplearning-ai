@@ -49,6 +49,10 @@ Shows stakeholders a working product immediately. Establishes UI patterns and br
 - [x] Agent area: record own ailments, book and cancel own appointments, edit own profile
 - [x] Data isolation: agents see only their own data and cannot open staff pages
 
+#### Access Management
+- [x] Roles and permissions managed with Spatie: roles, permissions per role, roles per user and individual permissions
+- [x] Administration pages for users and roles, with lock-out safeguards
+
 #### Polish & Scale
 - [x] Appointment reminder notifications
 - [ ] Agent wellness scores/metrics

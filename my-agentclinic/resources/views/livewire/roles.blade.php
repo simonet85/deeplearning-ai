@@ -1,11 +1,14 @@
 <?php
 
+use App\Models\User;
 use App\Support\Access;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Volt\Component;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 new class extends Component
 {
@@ -98,7 +101,20 @@ new class extends Component
             $names = array_intersect(Access::permissionNames(), [...$names, ...Access::ADMIN_LOCKED]);
         }
 
+        DB::beginTransaction();
         $role->syncPermissions(array_values($names));
+
+        // Whatever is ticked, someone must still be able to manage users and roles, or nobody could undo a mistake.
+        if (! User::permission('users.manage')->exists() || ! User::permission('roles.manage')->exists()) {
+            DB::rollBack();
+            app(PermissionRegistrar::class)->forgetCachedPermissions();
+            $this->loadSelected();
+            $this->addError("role.$id", __('That would leave nobody able to manage users and roles.'));
+
+            return;
+        }
+
+        DB::commit();
 
         $this->refreshRoles();
         $this->dispatch('permissions-saved', role: $role->id);

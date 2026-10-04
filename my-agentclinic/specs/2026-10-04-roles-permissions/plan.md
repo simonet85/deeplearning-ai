@@ -20,13 +20,13 @@ Vertical slices, each with its tests. Run `sail test` after every slice.
 ## 3. Roles page
 1. `/admin/roles` behind `can:roles.manage`: list roles with their user counts and permissions grouped by domain.
 2. Create a role, rename a custom role, tick and untick permissions, delete a custom role with no users.
-3. Protections: built-in roles cannot be renamed or deleted; `admin` keeps `roles.manage` and `users.manage`.
+3. Protections: built-in roles cannot be renamed or deleted; `admin` keeps `roles.manage` and `users.manage`; a permission change that would leave no user holding both is rolled back.
 4. Tests: every action, every protection, validation (unique name, length), and access (403 without the permission).
 
 ## 4. Users page
 1. `/admin/users` behind `can:users.manage`: list accounts with name, e-mail, role and extra permissions.
 2. Change a user's role, grant and revoke individual permissions, search by name or e-mail.
-3. Protections: cannot change your own role, cannot remove `users.manage` from the last user who holds it; give an agent record to a user newly given an agent role.
+3. Protections: cannot change your own role or individual permissions; give an agent record to a user newly given an agent permission.
 4. Tests: every action and protection, the agent-record creation, access (403 without the permission).
 
 ## 5. Navigation, access matrix and docs

@@ -6,6 +6,7 @@ use App\Models\Appointment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 /**
@@ -54,6 +55,10 @@ class AccessMatrixTest extends TestCase
             array_push($rows, ['guest', $agentPage, $login], ['agent', $agentPage, 200], ['therapist', $agentPage, 403], ['admin', $agentPage, 403]);
         }
 
+        foreach (['/admin/users', '/admin/roles'] as $adminPage) {
+            array_push($rows, ['guest', $adminPage, $login], ['agent', $adminPage, 403], ['therapist', $adminPage, 403], ['admin', $adminPage, 200]);
+        }
+
         array_push($rows,
             ['guest', '/me', $login], ['agent', '/me', 'redirect:/me/appointments'], ['therapist', '/me', 403], ['admin', '/me', 403],
         );
@@ -97,13 +102,13 @@ class AccessMatrixTest extends TestCase
         $this->fail("No snapshot found for the [$component] component.");
     }
 
-    private function callRequest(User $user, string $snapshot, string $method)
+    private function callRequest(User $user, string $snapshot, string $method, array $params = [])
     {
         return $this->actingAs($user)->postJson(route('default.livewire.update'), [
             'components' => [[
                 'snapshot' => $snapshot,
                 'updates' => [],
-                'calls' => [['path' => '', 'method' => $method, 'params' => []]],
+                'calls' => [['path' => '', 'method' => $method, 'params' => $params]],
             ]],
         ], ['X-Livewire' => 'true']);
     }
@@ -127,6 +132,58 @@ class AccessMatrixTest extends TestCase
 
         $this->callRequest($agent, $snapshot, 'book')->assertOk();
         $this->callRequest(User::factory()->admin()->create(), $snapshot, 'book')->assertForbidden();
+    }
+
+    public function test_the_roles_component_cannot_be_driven_without_the_permission(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $snapshot = $this->snapshotOf($this->actingAs($admin)->get('/admin/roles')->getContent(), 'roles');
+
+        // Control: the request is accepted for an administrator, so the 403s below are the permission check.
+        $this->callRequest($admin, $snapshot, 'createRole')->assertOk();
+
+        foreach ([User::factory()->create(), User::factory()->agent()->create()] as $other) {
+            $this->callRequest($other, $snapshot, 'createRole')->assertForbidden();
+            $this->callRequest($other, $snapshot, 'deleteRole', [1])->assertForbidden();
+        }
+    }
+
+    public function test_the_users_component_cannot_be_driven_without_the_permission(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $target = User::factory()->create();
+        $snapshot = $this->snapshotOf($this->actingAs($admin)->get('/admin/users')->getContent(), 'users');
+
+        $this->callRequest($admin, $snapshot, 'togglePanel', [$target->id])->assertOk();
+
+        foreach ([User::factory()->create(), User::factory()->agent()->create()] as $other) {
+            $this->callRequest($other, $snapshot, 'changeRole', [$target->id, 'admin'])->assertForbidden();
+        }
+
+        $this->assertTrue($target->fresh()->hasExactRoles('therapist'));
+    }
+
+    public function test_a_custom_role_with_only_the_roles_permission_cannot_open_the_users_page(): void
+    {
+        $role = Role::create(['name' => 'role editors', 'guard_name' => 'web']);
+        $role->givePermissionTo('roles.manage');
+        $user = User::factory()->create();
+        $user->syncRoles($role);
+
+        $this->actingAs($user)->get('/admin/roles')->assertOk();
+        $this->actingAs($user)->get('/admin/users')->assertForbidden();
+    }
+
+    public function test_the_navigation_shows_the_administration_links_only_to_those_who_may_use_them(): void
+    {
+        $admin = $this->actingAs(User::factory()->admin()->create())->get('/profile')->getContent();
+        $other = $this->actingAs(User::factory()->create())->get('/profile')->getContent();
+
+        // One link in the desktop menu and one in the collapsed mobile menu.
+        $this->assertSame(2, substr_count($admin, 'href="'.url('/admin/users').'"'));
+        $this->assertSame(2, substr_count($admin, 'href="'.url('/admin/roles').'"'));
+        $this->assertSame(0, substr_count($other, '/admin/users'));
+        $this->assertSame(0, substr_count($other, '/admin/roles'));
     }
 
     public function test_one_agent_cannot_cancel_another_agents_appointment_through_a_livewire_request(): void
