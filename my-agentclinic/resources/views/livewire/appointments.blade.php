@@ -235,6 +235,9 @@ new class extends Component
                     <div class="font-semibold text-gray-900">{{ $appointment->agent->name }}</div>
                     <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $appointment->datetime->format('D, M j · H:i') }} · {{ ucfirst($appointment->status->value) }}</div>
                     <p class="mt-2 text-sm text-gray-600">{{ $appointment->therapy->name }} {{ __('with') }} {{ $appointment->therapist->name }}</p>
+                    @if ($appointment->reminder_sent_at)
+                        <p class="mt-1 text-xs text-gray-500">{{ __('Reminder sent') }} {{ $appointment->reminder_sent_at->format('M j, H:i') }}</p>
+                    @endif
                     @if ($appointment->status === \App\Enums\AppointmentStatus::Booked)
                         <div class="mt-3">
                             <x-secondary-button type="button" wire:click="cancel({{ $appointment->id }})" wire:confirm="{{ __('Cancel this appointment?') }}">{{ __('Cancel') }}</x-secondary-button>

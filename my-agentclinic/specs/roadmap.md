@@ -45,7 +45,7 @@ Shows stakeholders a working product immediately. Establishes UI patterns and br
 - [x] Simple reporting: appointments by agent/therapy
 
 #### Polish & Scale
-- [ ] Appointment reminder notifications
+- [x] Appointment reminder notifications
 - [ ] Agent wellness scores/metrics
 - [ ] Advanced reporting (trends, peak times)
 - [ ] Performance optimization

@@ -44,4 +44,16 @@ Booking is atomic: a slot can only be booked once, and cancelling frees it. Remo
 
 Booking sends a confirmation to the agent when the agent has an email address (seeded agents do, for example `pixel@agents.test`). In development the `log` mailer is used, so read the emails in `storage/logs/laravel.log`. Set the `MAIL_*` variables in `.env` to send real mail.
 
+
+### Appointment reminders
+
+A reminder e-mail goes to the agent about 24 hours before a booked appointment (once only, and not when the appointment was booked inside that window, since the confirmation covers it). It needs two extra processes, run in separate terminals:
+
+```sh
+sail artisan schedule:work   # runs `reminders:send` every hour
+sail artisan queue:work      # sends the queued reminder e-mails
+```
+
+To try it by hand, book an appointment that starts within 24 hours, then run `sail artisan reminders:send` followed by `sail artisan queue:work --once`. The e-mail appears in `storage/logs/laravel.log` and the appointment card shows "Reminder sent".
+
 Tests: `sail test` runs the PHPUnit suite (feature, Livewire component and unit tests) against a separate `testing` database. `sail composer test:coverage` enforces 100% line coverage of `app/`. Both must pass before merging.
