@@ -26,6 +26,15 @@
   - Structured schema for agents, ailments, therapies, appointments
   - Audit trail for compliance
 
+### Responsive design
+The web UI is responsive and mobile-first. This applies to every page and every feature.
+- **Approach**: Tailwind's mobile-first utilities. Base styles target small screens; `sm` (640px), `md` (768px), `lg` (1024px) and `xl` (1280px) add layout for larger ones. No fixed widths; use fluid containers and CSS grid/flex.
+- **Viewport**: every page declares `<meta name="viewport" content="width=device-width, initial-scale=1">`. The shared `<x-layout>` does this for app pages.
+- **Supported range**: 320px up to wide desktop, with no horizontal scrolling at any width.
+- **Touch targets**: interactive controls are at least 44x44px below `sm`. Use the `.touch-target` class (defined in `resources/css/layout.css`) on buttons and links; shared button components already include it.
+- **Navigation**: the header collapses to a menu on small screens; content stacks to a single column and grids add columns as width allows.
+- **Verification**: Blade/Livewire feature tests assert the viewport meta and responsive classes; each feature's `validation.md` includes a manual check at 320, 390, 768 and 1280px.
+
 ### Testing
 - **Framework**: PHPUnit, the Laravel default, with Laravel's HTTP test helpers and Livewire's component testing (`Livewire::test(...)`) for interactive components.
 - **Run**: `sail test` (or `sail composer test`). Tests run inside the Sail container against a separate `testing` Postgres database, so development data is never touched.

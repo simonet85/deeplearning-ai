@@ -13,6 +13,7 @@ Provide a humorous yet functional space where:
 - Witty and self-aware (agents treating human management as a clinical condition)
 - Warm and relatable (all users—agents and staff—deserve care)
 - Accessible (works smoothly on modern browsers for agents and staff alike)
+- Responsive (the web UI is designed mobile-first and works from phones to wide desktops, so staff can use it wherever they are)
 
 ## Success Metric
 Users (agents and staff) find the platform delightful to use, genuinely helpful for appointment booking and tracking, and a conversation starter for how we think about agent well-being.

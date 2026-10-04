@@ -26,4 +26,9 @@
     .site-footer-brand {
         @apply font-semibold text-gray-700;
     }
+
+    /* Touch-friendly: 44px minimum hit area on small screens, compact again from `sm` up. */
+    .touch-target {
+        @apply min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0;
+    }
 }

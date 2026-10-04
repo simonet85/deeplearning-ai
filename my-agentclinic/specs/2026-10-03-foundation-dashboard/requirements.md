@@ -17,6 +17,7 @@ Out of scope: ailments, therapies, appointments, notifications, reporting (Phase
 - **Environment**: fully containerized with Laravel Sail (`compose.yaml`, services `laravel.test` and `pgsql`). Host needs only Docker; PHP/Composer/Node run in containers. Chosen after host-side Composer failed on GitHub auth/timeouts and a custom Dockerfile build failed on slow apt downloads.
 - **Testing**: PHPUnit per `specs/tech-stack.md`: feature tests for HTTP, auth, roles, layout and seeders; Livewire (Volt) component tests; unit tests for isolated logic. `RefreshDatabase` and factories, no database mocking. Run with `sail test`.
 - **Tone**: satirical, warm, per `specs/mission.md`.
+- **Responsive design**: all UI is mobile-first and works from 320px to desktop with no horizontal scroll, per `specs/tech-stack.md`. Interactive controls are at least 44px on small screens (`.touch-target` in `resources/css/layout.css`), applied to the shared Breeze buttons, the logo link and the login link.
 
 ## Context
 - Stack per `specs/tech-stack.md`: Laravel (PHP 8.3+), Blade + Livewire, Eloquent, migrations.

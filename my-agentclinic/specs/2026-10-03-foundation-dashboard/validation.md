@@ -4,7 +4,7 @@ The work can merge when all of the following hold.
 
 ## Automated
 - [x] `sail artisan migrate:fresh --seed` succeeds against the Docker Postgres database.
-- [x] `sail test` passes (PHPUnit): 43 tests, 132 assertions. This is the merge gate.
+- [x] `sail test` passes (PHPUnit): 46 tests, 138 assertions. This is the merge gate.
 - [x] `sail composer test:coverage` passes with 100% line coverage of `app/`.
 - [x] Tests cover: staff login/logout (Breeze auth tests), unauthenticated redirect, role-restricted access, dashboard renders seeded agents, seeders create expected records, layout landmarks and stylesheet link.
 - [x] Livewire component tests cover the agent list (ordering, fields, empty state), and unit tests cover the `User` role helpers.
@@ -14,7 +14,10 @@ The work can merge when all of the following hold.
 - [x] Log in as seeded admin and therapist; both reach the dashboard. (Verified in Chrome, desktop and mobile.)
 - [x] Guest visiting the dashboard is redirected to login.
 - [x] Dashboard lists the seeded agents and reads as witty and warm per `specs/mission.md`. (Five agents render; tone is a human judgment call.)
-- [ ] Layout renders correctly in current Chrome, Firefox, and Safari, and at mobile width. (Chrome desktop and 390px mobile verified, no horizontal scroll or JS errors. Firefox and Safari not tested.)
+- [ ] Layout renders correctly in current Chrome, Firefox, and Safari. (Chrome verified, no JS errors. Firefox and Safari not tested.)
+- [x] Responsive: landing, login, dashboard and profile show no horizontal scroll at 320, 390, 768, 1024 and 1280px (Chrome).
+- [x] Responsive: buttons and links are at least 44px below `sm`. Re-audited in Chrome at 320 and 390px: no controls under 40px on any page.
+- [x] Feature tests assert the viewport meta, the `touch-target` class and the responsive agent grid (`sm:grid-cols-2 lg:grid-cols-3`).
 
 ## Hygiene
 - [x] No leftover TypeScript scaffold files.

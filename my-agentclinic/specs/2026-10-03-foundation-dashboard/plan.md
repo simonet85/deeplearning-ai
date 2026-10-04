@@ -37,7 +37,13 @@ Laravel Sail (the official Docker environment) provides PHP, Composer, Node and 
 5. Set `APP_NAME=AgentClinic` so the page title and footer show the brand.
 6. Add feature tests for the header, main and footer landmarks and the stylesheet link.
 
-## 7. Tests and wrap-up
+## 7. Responsive design
+1. Audit the landing, login, dashboard and profile pages at 320, 390, 768, 1024 and 1280px for horizontal overflow and touch-target size.
+2. Add a `.touch-target` class to `resources/css/layout.css` (44px minimum below `sm`, compact from `sm` up).
+3. Apply it to the shared primary, secondary and danger buttons, the navigation logo link and the login "Forgot your password?" link.
+4. Add feature tests for the viewport meta, the touch-target class and the responsive agent grid classes.
+
+## 8. Tests and wrap-up
 1. PHPUnit feature tests: login, role access, dashboard rendering, seeders, layout.
 2. Livewire component tests: `Volt::test('agent-list')` for ordering, fields and the empty state.
 3. Unit tests: `User` role helpers (`hasRole`, `isAdmin`), with no database.

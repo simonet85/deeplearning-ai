@@ -1,7 +1,7 @@
 # AgentClinic Roadmap
 
 ## Phasing Strategy: UI-First with Emerging Schema
-Since Livewire is component-driven, we build user-facing features first. Database schema emerges organically as we implement each feature. This keeps the team aligned on what users actually need.
+Since Livewire is component-driven, we build user-facing features first. Database schema emerges organically as we implement each feature. This keeps the team aligned on what users actually need. Every phase's UI is responsive (mobile-first, per `tech-stack.md`), so each deliverable below must work from phone to desktop.
 
 ---
 
@@ -83,4 +83,5 @@ Completes the core user journey. Shows ROI to stakeholders. Provides real usage 
 - Dashboard loads fast (<1s)
 - Booking completes in <5 clicks
 - All browsers (Safari, Chrome, Firefox) render correctly
+- Responsive from 320px to desktop: no horizontal scroll, 44px touch targets on small screens
 - Every phase ships with passing tests (PHPUnit plus Livewire component tests, per `tech-stack.md`); `sail test` passes before any merge
