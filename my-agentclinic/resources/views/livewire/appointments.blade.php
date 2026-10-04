@@ -2,6 +2,7 @@
 
 use App\Enums\AppointmentStatus;
 use App\Enums\Role;
+use App\Mail\AppointmentBooked;
 use App\Models\Agent;
 use App\Models\Appointment;
 use App\Models\Availability;
@@ -10,6 +11,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Computed;
 use Livewire\Volt\Component;
@@ -97,7 +99,7 @@ new class extends Component
             'availabilityId' => ['required', 'exists:availability,id'],
         ]);
 
-        DB::transaction(function () {
+        $appointment = DB::transaction(function () {
             $slot = Availability::lockForUpdate()->findOrFail($this->availabilityId);
 
             if ($slot->appointment()->exists() || $slot->startsAt()->isPast()) {
@@ -106,7 +108,7 @@ new class extends Component
                 ]);
             }
 
-            Appointment::create([
+            return Appointment::create([
                 'agent_id' => $this->agentId,
                 'therapist_id' => $slot->therapist_id,
                 'therapy_id' => $this->therapyId,
@@ -115,6 +117,12 @@ new class extends Component
                 'status' => AppointmentStatus::Booked,
             ]);
         });
+
+        $agent = $appointment->agent;
+
+        if ($agent->email) {
+            Mail::to($agent->email)->send(new AppointmentBooked($appointment));
+        }
 
         $this->reset('agentId', 'therapyId', 'availabilityId');
         unset($this->openSlots, $this->upcoming, $this->past);

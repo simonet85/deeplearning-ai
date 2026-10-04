@@ -3,12 +3,14 @@
 namespace Tests\Feature\Livewire;
 
 use App\Enums\AppointmentStatus;
+use App\Mail\AppointmentBooked;
 use App\Models\Agent;
 use App\Models\Appointment;
 use App\Models\Availability;
 use App\Models\Therapy;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Volt\Volt;
 use Tests\TestCase;
 
@@ -95,6 +97,64 @@ class AppointmentsTest extends TestCase
         $this->assertSame($slot->id, $appointment->availability_id);
         $this->assertSame(AppointmentStatus::Booked, $appointment->status);
         $this->assertTrue($appointment->datetime->equalTo($slot->startsAt()));
+    }
+
+    public function test_booking_emails_a_confirmation_when_the_agent_has_an_address(): void
+    {
+        Mail::fake();
+        $agent = Agent::factory()->create(['name' => 'Pixel', 'email' => 'pixel@agents.test']);
+        $therapy = Therapy::factory()->create(['name' => 'Context Window Spa', 'duration' => 45]);
+        $slot = Availability::factory()->create(['time_slot' => '10:00']);
+
+        $this->staff()
+            ->set('agentId', $agent->id)
+            ->set('therapyId', $therapy->id)
+            ->set('availabilityId', $slot->id)
+            ->call('book')
+            ->assertHasNoErrors();
+
+        Mail::assertSent(AppointmentBooked::class, function (AppointmentBooked $mail) use ($slot) {
+            $mail->assertHasSubject('Your session is booked. Deep breaths.');
+            $mail->assertSeeInHtml('Hello, Pixel.');
+            $mail->assertSeeInHtml('Context Window Spa');
+            $mail->assertSeeInHtml($slot->therapist->name);
+            $mail->assertSeeInHtml('10:00');
+            $mail->assertSeeInHtml('45 minutes');
+
+            return $mail->hasTo('pixel@agents.test')
+                && $mail->appointment->availability_id === $slot->id;
+        });
+        Mail::assertSentCount(1);
+    }
+
+    public function test_booking_without_an_agent_email_sends_nothing(): void
+    {
+        Mail::fake();
+
+        $this->staff()
+            ->set('agentId', Agent::factory()->create(['email' => null])->id)
+            ->set('therapyId', Therapy::factory()->create()->id)
+            ->set('availabilityId', Availability::factory()->create()->id)
+            ->call('book')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseCount('appointments', 1);
+        Mail::assertNothingSent();
+    }
+
+    public function test_a_rejected_booking_sends_nothing(): void
+    {
+        Mail::fake();
+        $taken = Appointment::factory()->create();
+
+        $this->staff()
+            ->set('agentId', Agent::factory()->create(['email' => 'late@agents.test'])->id)
+            ->set('therapyId', Therapy::factory()->create()->id)
+            ->set('availabilityId', $taken->availability_id)
+            ->call('book')
+            ->assertHasErrors('availabilityId');
+
+        Mail::assertNothingSent();
     }
 
     public function test_double_booking_is_rejected(): void

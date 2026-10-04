@@ -18,7 +18,12 @@ class AgentSeeder extends Seeder
         ];
 
         foreach ($agents as [$name, $type, $bio]) {
-            Agent::create(['name' => $name, 'agent_type' => $type, 'bio' => $bio]);
+            Agent::create([
+                'name' => $name,
+                'agent_type' => $type,
+                'bio' => $bio,
+                'email' => strtolower($name).'@agents.test',
+            ]);
         }
     }
 }
