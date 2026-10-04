@@ -21,6 +21,12 @@
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
+                    <livewire:dashboard-summary />
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6">
                     <livewire:agent-list />
                 </div>
             </div>

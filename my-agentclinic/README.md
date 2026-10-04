@@ -26,4 +26,22 @@ Seeded staff (password `password`): `admin@agentclinic.test` (admin), `sam@agent
 
 Common commands: `sail artisan migrate:fresh --seed`, `sail down`.
 
+## What's in the app
+
+All pages require a staff login. Agents have no login: staff act on an agent's behalf.
+
+| Page | Path | What it does |
+| --- | --- | --- |
+| Dashboard | `/dashboard` | Summary tiles (upcoming sessions, open slots, patients) and the agent list |
+| Ailments | `/ailments` | Record an ailment and its severity for an agent |
+| Therapies | `/therapies` | Browse the catalog and rate therapies per agent; admins add, edit and delete therapies and link them to ailments |
+| Availability | `/availability` | Therapists manage their own open slots; admins manage everyone's |
+| Appointments | `/appointments` | Book a slot for an agent, cancel, filter by agent, therapist or therapy, and see counts by agent and therapy |
+
+Booking is atomic: a slot can only be booked once, and cancelling frees it. Removing a booked slot is blocked until the appointment is cancelled.
+
+### Confirmation emails
+
+Booking sends a confirmation to the agent when the agent has an email address (seeded agents do, for example `pixel@agents.test`). In development the `log` mailer is used, so read the emails in `storage/logs/laravel.log`. Set the `MAIL_*` variables in `.env` to send real mail.
+
 Tests: `sail test` runs the PHPUnit suite (feature, Livewire component and unit tests) against a separate `testing` database. `sail composer test:coverage` enforces 100% line coverage of `app/`. Both must pass before merging.

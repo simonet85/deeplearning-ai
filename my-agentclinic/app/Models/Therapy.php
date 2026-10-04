@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
-use Database\Factories\AgentFactory;
+use Database\Factories\TherapyFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'agent_type', 'bio', 'email'])]
-class Agent extends Model
+#[Fillable(['name', 'description', 'duration', 'type'])]
+class Therapy extends Model
 {
-    /** @use HasFactory<AgentFactory> */
+    /** @use HasFactory<TherapyFactory> */
     use HasFactory;
 
     /** @return HasMany<Appointment, $this> */
@@ -21,14 +22,14 @@ class Agent extends Model
     }
 
     /** @return HasMany<TherapyRating, $this> */
-    public function therapyRatings(): HasMany
+    public function ratings(): HasMany
     {
         return $this->hasMany(TherapyRating::class);
     }
 
-    /** @return HasMany<AgentAilment, $this> */
-    public function agentAilments(): HasMany
+    /** @return BelongsToMany<Ailment, $this> */
+    public function ailments(): BelongsToMany
     {
-        return $this->hasMany(AgentAilment::class);
+        return $this->belongsToMany(Ailment::class);
     }
 }

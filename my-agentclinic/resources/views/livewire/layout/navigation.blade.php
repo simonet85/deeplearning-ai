@@ -33,6 +33,18 @@ new class extends Component
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('ailments')" :active="request()->routeIs('ailments')" wire:navigate>
+                        {{ __('Ailments') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('therapies')" :active="request()->routeIs('therapies')" wire:navigate>
+                        {{ __('Therapies') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('availability')" :active="request()->routeIs('availability')" wire:navigate>
+                        {{ __('Availability') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('appointments')" :active="request()->routeIs('appointments')" wire:navigate>
+                        {{ __('Appointments') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -68,7 +80,7 @@ new class extends Component
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                <button @click="open = ! open" class="touch-target inline-flex items-center justify-center p-2rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -83,6 +95,18 @@ new class extends Component
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('ailments')" :active="request()->routeIs('ailments')" wire:navigate>
+                {{ __('Ailments') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('therapies')" :active="request()->routeIs('therapies')" wire:navigate>
+                {{ __('Therapies') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('availability')" :active="request()->routeIs('availability')" wire:navigate>
+                {{ __('Availability') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('appointments')" :active="request()->routeIs('appointments')" wire:navigate>
+                {{ __('Appointments') }}
             </x-responsive-nav-link>
         </div>
 

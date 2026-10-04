@@ -3,10 +3,20 @@
 All notable changes to AgentClinic, grouped by date (newest first).
 Maintained with the `changelog` skill; run it before merging.
 
-<!-- changelog-last-commit: 6b2e9e0 -->
+<!-- changelog-last-commit: 4c28b06 -->
 
 ## 2026-10-04
 
+- Added the Ailments page: staff record an ailment and its severity for an agent, with five seeded satirical ailments.
+- Added the Therapies page: a catalog showing each therapy's type, duration and treated ailments, with admin-only add, edit and delete.
+- Added therapy ratings: staff rate a therapy on an agent's behalf (1-5, one per agent and therapy) and the catalog shows the average.
+- Added the Availability page: therapists manage their own open slots, admins manage everyone's, and duplicate or past slots are rejected.
+- Added appointment booking: staff book an open slot for an agent, double booking is prevented, and cancelling frees the slot; a booked slot can't be removed.
+- Added appointment filters (agent, therapist, therapy) with upcoming and past lists, a report of appointments by agent and by therapy, and summary tiles on the dashboard.
+- Added a confirmation email sent on booking when the agent has an address; agents gained an optional email and the `log` mailer is used in development.
+- Fixed issues found in a browser pass: the report now updates live after booking or cancelling, the therapy form no longer throws a JavaScript error, the mobile menu button meets the 44px touch target, and same-time open slots are ordered consistently.
+- Added responsive tests for the new pages and documented them in the README.
+- Wrote the MVP plan, requirements and validation specs and ticked the delivered Phase 2 roadmap items.
 - Added a main layout component (`<x-layout>`) built from header, main and footer subcomponents, with its styles in `resources/css/layout.css`.
 - Adopted PHPUnit as the testing approach: Livewire component tests, unit tests, a login lockout test and an email verification test.
 - Reached 100% line coverage of `app/`, enforced by the new `composer test:coverage` script.
