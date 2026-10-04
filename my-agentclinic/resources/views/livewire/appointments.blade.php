@@ -1,8 +1,8 @@
 <?php
 
+use App\Actions\BookAppointment;
 use App\Enums\AppointmentStatus;
 use App\Enums\Role;
-use App\Mail\AppointmentBooked;
 use App\Models\Agent;
 use App\Models\Appointment;
 use App\Models\Availability;
@@ -10,9 +10,6 @@ use App\Models\Therapy;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Computed;
 use Livewire\Volt\Component;
 
@@ -99,30 +96,11 @@ new class extends Component
             'availabilityId' => ['required', 'exists:availability,id'],
         ]);
 
-        $appointment = DB::transaction(function () {
-            $slot = Availability::lockForUpdate()->findOrFail($this->availabilityId);
-
-            if ($slot->appointment()->exists() || $slot->startsAt()->isPast()) {
-                throw ValidationException::withMessages([
-                    'availabilityId' => __('That slot is no longer available.'),
-                ]);
-            }
-
-            return Appointment::create([
-                'agent_id' => $this->agentId,
-                'therapist_id' => $slot->therapist_id,
-                'therapy_id' => $this->therapyId,
-                'availability_id' => $slot->id,
-                'datetime' => $slot->startsAt(),
-                'status' => AppointmentStatus::Booked,
-            ]);
-        });
-
-        $agent = $appointment->agent;
-
-        if ($agent->email) {
-            Mail::to($agent->email)->send(new AppointmentBooked($appointment));
-        }
+        app(BookAppointment::class)->handle(
+            Agent::findOrFail($this->agentId),
+            Therapy::findOrFail($this->therapyId),
+            $this->availabilityId,
+        );
 
         $this->reset('agentId', 'therapyId', 'availabilityId');
         unset($this->openSlots, $this->upcoming, $this->past);
