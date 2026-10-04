@@ -20,6 +20,10 @@ Route::view('availability', 'availability')
     ->middleware(['auth', 'verified'])
     ->name('availability');
 
+Route::view('appointments', 'appointments')
+    ->middleware(['auth', 'verified'])
+    ->name('appointments');
+
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');

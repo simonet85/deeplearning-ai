@@ -70,6 +70,12 @@ new class extends Component
 
         abort_unless(auth()->user()->isAdmin() || $slot->therapist_id === auth()->id(), 403);
 
+        if ($slot->appointment()->exists()) {
+            $this->addError('slot', __('This slot has a booked appointment. Cancel it first.'));
+
+            return;
+        }
+
         $slot->delete();
         unset($this->slots);
     }
@@ -109,6 +115,7 @@ new class extends Component
 
     <div>
         <h3 class="text-lg font-semibold text-gray-800">{{ __('Open slots') }}</h3>
+        <x-input-error :messages="$errors->get('slot')" class="mt-2" />
         <ul class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @forelse ($this->slots as $slot)
                 <li wire:key="slot-{{ $slot->id }}" class="flex items-center justify-between gap-2 rounded-lg border border-gray-200 p-4">

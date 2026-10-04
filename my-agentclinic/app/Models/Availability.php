@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Database\Factories\AvailabilityFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable(['therapist_id', 'date', 'time_slot'])]
 class Availability extends Model
@@ -26,5 +28,16 @@ class Availability extends Model
     public function therapist(): BelongsTo
     {
         return $this->belongsTo(User::class, 'therapist_id');
+    }
+
+    /** @return HasOne<Appointment, $this> */
+    public function appointment(): HasOne
+    {
+        return $this->hasOne(Appointment::class);
+    }
+
+    public function startsAt(): CarbonInterface
+    {
+        return $this->date->copy()->setTimeFromTimeString($this->time_slot);
     }
 }

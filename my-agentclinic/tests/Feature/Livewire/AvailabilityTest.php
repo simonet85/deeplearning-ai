@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Livewire;
 
+use App\Models\Appointment;
 use App\Models\Availability;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -201,6 +202,17 @@ class AvailabilityTest extends TestCase
             ->call('remove', $slot->id);
 
         $this->assertDatabaseCount('availability', 0);
+    }
+
+    public function test_a_booked_slot_cannot_be_removed(): void
+    {
+        $appointment = Appointment::factory()->create();
+
+        Volt::actingAs(User::factory()->admin()->create())->test('availability')
+            ->call('remove', $appointment->availability_id)
+            ->assertSee('This slot has a booked appointment');
+
+        $this->assertDatabaseCount('availability', 1);
     }
 
     public function test_relationships(): void
