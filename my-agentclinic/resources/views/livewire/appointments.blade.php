@@ -126,6 +126,7 @@ new class extends Component
 
         $this->reset('agentId', 'therapyId', 'availabilityId');
         unset($this->openSlots, $this->upcoming, $this->past);
+        $this->dispatch('appointments-changed');
     }
 
     public function cancel(int $id): void
@@ -140,6 +141,7 @@ new class extends Component
         }
 
         unset($this->openSlots, $this->upcoming, $this->past);
+        $this->dispatch('appointments-changed');
     }
 }; ?>
 

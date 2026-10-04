@@ -99,6 +99,31 @@ class AppointmentsTest extends TestCase
         $this->assertTrue($appointment->datetime->equalTo($slot->startsAt()));
     }
 
+    public function test_booking_and_cancelling_notify_the_report(): void
+    {
+        $slot = Availability::factory()->create();
+
+        $component = $this->staff()
+            ->set('agentId', Agent::factory()->create()->id)
+            ->set('therapyId', Therapy::factory()->create()->id)
+            ->set('availabilityId', $slot->id)
+            ->call('book')
+            ->assertDispatched('appointments-changed');
+
+        $component->call('cancel', Appointment::first()->id)->assertDispatched('appointments-changed');
+    }
+
+    public function test_open_slots_at_the_same_time_are_ordered_by_therapist(): void
+    {
+        $first = User::factory()->create();
+        $second = User::factory()->create();
+        $date = now()->addDays(3)->toDateString();
+        $later = Availability::factory()->create(['therapist_id' => $second->id, 'date' => $date, 'time_slot' => '09:00']);
+        $earlier = Availability::factory()->create(['therapist_id' => $first->id, 'date' => $date, 'time_slot' => '09:00']);
+
+        $this->assertSame([$earlier->id, $later->id], Availability::open()->pluck('id')->all());
+    }
+
     public function test_booking_emails_a_confirmation_when_the_agent_has_an_address(): void
     {
         Mail::fake();

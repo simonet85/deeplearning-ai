@@ -173,7 +173,8 @@ new class extends Component
                         </label>
                     @endforeach
                 </div>
-                <x-input-error :messages="collect($errors->get('ailmentIds.*'))->flatten()->all()"class="mt-2" />
+                @php($ailmentErrors = collect($errors->get('ailmentIds.*'))->flatten()->all())
+                <x-input-error :messages="$ailmentErrors" class="mt-2" />
             </fieldset>
 
             <div class="flex flex-wrap gap-2 sm:col-span-2">

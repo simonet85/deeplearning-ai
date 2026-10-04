@@ -264,6 +264,18 @@ class TherapiesTest extends TestCase
         $this->assertTrue($rating->agent->therapyRatings->first()->is($rating));
     }
 
+    public function test_ailment_validation_errors_render_as_a_compiled_component(): void
+    {
+        Volt::actingAs(User::factory()->admin()->create())->test('therapies')
+            ->set('name', 'Spa')
+            ->set('duration', 30)
+            ->set('type', 'Rest')
+            ->set('ailmentIds', [999])
+            ->call('save')
+            ->assertSee('selected ailmentIds.0 is invalid')
+            ->assertDontSee('<x-input-error', false);
+    }
+
     public function test_pivot_relationship_works_from_both_sides(): void
     {
         $ailment = Ailment::factory()->create();

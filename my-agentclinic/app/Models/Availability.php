@@ -49,6 +49,7 @@ class Availability extends Model
             ->whereDate('date', '>=', today())
             ->orderBy('date')
             ->orderBy('time_slot')
+            ->orderBy('therapist_id')
             ->get()
             ->reject(fn (Availability $slot) => $slot->startsAt()->isPast());
     }

@@ -14,6 +14,7 @@ Maintained with the `changelog` skill; run it before merging.
 - Added appointment booking: staff book an open slot for an agent, double booking is prevented, and cancelling frees the slot; a booked slot can't be removed.
 - Added appointment filters (agent, therapist, therapy) with upcoming and past lists, a report of appointments by agent and by therapy, and summary tiles on the dashboard.
 - Added a confirmation email sent on booking when the agent has an address; agents gained an optional email and the `log` mailer is used in development.
+- Fixed issues found in a browser pass: the report now updates live after booking or cancelling, the therapy form no longer throws a JavaScript error, the mobile menu button meets the 44px touch target, and same-time open slots are ordered consistently.
 - Added responsive tests for the new pages and documented them in the README.
 - Wrote the MVP plan, requirements and validation specs and ticked the delivered Phase 2 roadmap items.
 - Added a main layout component (`<x-layout>`) built from header, main and footer subcomponents, with its styles in `resources/css/layout.css`.

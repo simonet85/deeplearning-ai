@@ -31,6 +31,7 @@ new class extends Component
             ->when(! auth()->user()->isAdmin(), fn ($query) => $query->where('therapist_id', auth()->id()))
             ->orderBy('date')
             ->orderBy('time_slot')
+            ->orderBy('therapist_id')
             ->get();
     }
 

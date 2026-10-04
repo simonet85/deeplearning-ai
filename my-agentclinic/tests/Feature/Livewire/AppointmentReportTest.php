@@ -46,6 +46,16 @@ class AppointmentReportTest extends TestCase
         $this->assertSame(2, $component->instance()->byTherapy->first()->appointments_count);
     }
 
+    public function test_report_updates_when_an_appointment_changes(): void
+    {
+        $component = Volt::test('appointment-report')->assertSee('Nothing to report');
+
+        $appointment = Appointment::factory()->create();
+        $appointment->agent->update(['name' => 'FreshAgent']);
+
+        $component->dispatch('appointments-changed')->assertSee('FreshAgent');
+    }
+
     public function test_appointments_page_includes_the_report(): void
     {
         $this->actingAs(User::factory()->create())

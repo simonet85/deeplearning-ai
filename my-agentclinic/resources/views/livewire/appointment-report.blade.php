@@ -5,10 +5,18 @@ use App\Models\Agent;
 use App\Models\Therapy;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Volt\Component;
 
 new class extends Component
 {
+    /** Re-render when an appointment is booked or cancelled elsewhere on the page. */
+    #[On('appointments-changed')]
+    public function refresh(): void
+    {
+        unset($this->byAgent, $this->byTherapy);
+    }
+
     /** @return Collection<int, Agent> */
     #[Computed]
     public function byAgent(): Collection
