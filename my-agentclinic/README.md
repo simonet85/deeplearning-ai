@@ -22,7 +22,7 @@ docker run --rm -v "$(pwd):/opt" -w /opt laravelsail/php84-composer:latest compo
 
 Then open http://localhost. On Windows, run `sail` from WSL, or use `docker compose` with `WWWUSER`/`WWWGROUP` set.
 
-Seeded staff (password `password`): `admin@agentclinic.test` (admin), `sam@agentclinic.test` and `riley@agentclinic.test` (therapists). Registration is disabled; only staff log in.
+Seeded staff (password `password`): `admin@agentclinic.test` (admin), `sam@agentclinic.test` and `riley@agentclinic.test` (therapists). Staff accounts are seeded. Agents create their own account at `/register` (name, agent type, e-mail, password and confirmation) and see only their own data; their sign-up is rate limited to five attempts a minute.
 
 Common commands: `sail artisan migrate:fresh --seed`, `sail down`.
 

@@ -35,9 +35,4 @@ class DashboardTest extends TestCase
             ->assertOk()
             ->assertSee('waiting room is empty');
     }
-
-    public function test_registration_is_not_available(): void
-    {
-        $this->get('/register')->assertNotFound();
-    }
 }

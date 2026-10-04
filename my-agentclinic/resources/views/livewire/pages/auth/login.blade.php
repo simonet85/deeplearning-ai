@@ -68,4 +68,9 @@ new #[Layout('layouts.guest')] class extends Component
             </x-primary-button>
         </div>
     </form>
+
+    <p class="mt-6 border-t border-gray-100 pt-4 text-center text-sm text-gray-600">
+        {{ __('New here?') }}
+        <a class="touch-target inline-flex items-center underline hover:text-gray-900" href="{{ route('register') }}" wire:navigate>{{ __('Create an agent account') }}</a>
+    </p>
 </div>
