@@ -4,25 +4,23 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
 
-Route::view('dashboard', 'dashboard')
+// Agents have their own area; the staff dashboard sends them there.
+Route::get('dashboard', fn () => auth()->user()->isAgent() ? redirect()->route('agent.home') : view('dashboard'))
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::view('ailments', 'ailments')
-    ->middleware(['auth', 'verified'])
-    ->name('ailments');
+// Staff pages: administrators and therapists only.
+Route::middleware(['auth', 'verified', 'role:admin,therapist'])->group(function () {
+    Route::view('ailments', 'ailments')->name('ailments');
+    Route::view('therapies', 'therapies')->name('therapies');
+    Route::view('availability', 'availability')->name('availability');
+    Route::view('appointments', 'appointments')->name('appointments');
+});
 
-Route::view('therapies', 'therapies')
-    ->middleware(['auth', 'verified'])
-    ->name('therapies');
-
-Route::view('availability', 'availability')
-    ->middleware(['auth', 'verified'])
-    ->name('availability');
-
-Route::view('appointments', 'appointments')
-    ->middleware(['auth', 'verified'])
-    ->name('appointments');
+// Agent area. Its pages arrive in later slices; until then agents land on their profile.
+Route::redirect('me', '/profile')
+    ->middleware(['auth', 'verified', 'role:agent'])
+    ->name('agent.home');
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\Role;
+use App\Models\Agent;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -33,6 +34,17 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'role' => Role::Therapist,
         ];
+    }
+
+    /** An agent account together with its linked agent record. */
+    public function agent(): static
+    {
+        return $this->state(fn (array $attributes) => ['role' => Role::Agent])
+            ->afterCreating(fn (User $user) => Agent::factory()->create([
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ]));
     }
 
     public function admin(): static

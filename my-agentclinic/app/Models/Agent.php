@@ -6,13 +6,20 @@ use Database\Factories\AgentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'agent_type', 'bio', 'email'])]
+#[Fillable(['user_id', 'name', 'agent_type', 'bio', 'email'])]
 class Agent extends Model
 {
     /** @use HasFactory<AgentFactory> */
     use HasFactory;
+
+    /** @return BelongsTo<User, $this> */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     /** @return HasMany<Appointment, $this> */
     public function appointments(): HasMany
