@@ -2,8 +2,10 @@
 
 namespace Tests\Feature\Livewire;
 
+use App\Models\Agent;
 use App\Models\Ailment;
 use App\Models\Therapy;
+use App\Models\TherapyRating;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Volt\Volt;
@@ -179,6 +181,87 @@ class TherapiesTest extends TestCase
             ->set('ailmentIds', [999])
             ->call('save')
             ->assertHasErrors(['name' => 'unique', 'duration' => 'min', 'ailmentIds.0' => 'exists']);
+    }
+
+    public function test_catalog_shows_average_rating_and_count(): void
+    {
+        $therapy = Therapy::factory()->create();
+        TherapyRating::factory()->create(['therapy_id' => $therapy->id, 'rating' => 5]);
+        TherapyRating::factory()->create(['therapy_id' => $therapy->id, 'rating' => 4]);
+
+        Volt::actingAs(User::factory()->create())->test('therapies')
+            ->assertSee('Rated 4.5/5 (2)');
+    }
+
+    public function test_catalog_shows_no_ratings_yet(): void
+    {
+        Therapy::factory()->create();
+
+        Volt::actingAs(User::factory()->create())->test('therapies')
+            ->assertSee('No ratings yet');
+    }
+
+    public function test_therapist_can_rate_a_therapy_for_an_agent(): void
+    {
+        $agent = Agent::factory()->create();
+        $therapy = Therapy::factory()->create();
+
+        Volt::actingAs(User::factory()->create())->test('therapies')
+            ->set('ratingAgentId', $agent->id)
+            ->set('ratingTherapyId', $therapy->id)
+            ->set('ratingValue', 4)
+            ->call('rate')
+            ->assertHasNoErrors()
+            ->assertSee('Rated 4.0/5 (1)')
+            ->assertSet('ratingAgentId', null)
+            ->assertSet('ratingValue', null);
+
+        $this->assertDatabaseHas('therapy_ratings', [
+            'agent_id' => $agent->id,
+            'therapy_id' => $therapy->id,
+            'rating' => 4,
+        ]);
+    }
+
+    public function test_rerating_updates_instead_of_duplicating(): void
+    {
+        $rating = TherapyRating::factory()->create(['rating' => 2]);
+
+        Volt::actingAs(User::factory()->create())->test('therapies')
+            ->set('ratingAgentId', $rating->agent_id)
+            ->set('ratingTherapyId', $rating->therapy_id)
+            ->set('ratingValue', 5)
+            ->call('rate')
+            ->assertHasNoErrors()
+            ->assertSee('Rated 5.0/5 (1)');
+
+        $this->assertDatabaseCount('therapy_ratings', 1);
+        $this->assertSame(5, $rating->fresh()->rating);
+    }
+
+    public function test_rating_validation(): void
+    {
+        $component = Volt::actingAs(User::factory()->create())->test('therapies');
+
+        $component->call('rate')
+            ->assertHasErrors(['ratingAgentId' => 'required', 'ratingTherapyId' => 'required', 'ratingValue' => 'required']);
+
+        $component->set('ratingAgentId', 999)
+            ->set('ratingTherapyId', 999)
+            ->set('ratingValue', 6)
+            ->call('rate')
+            ->assertHasErrors(['ratingAgentId' => 'exists', 'ratingTherapyId' => 'exists', 'ratingValue' => 'max']);
+
+        $component->set('ratingValue', 0)->call('rate')->assertHasErrors(['ratingValue' => 'min']);
+        $this->assertDatabaseCount('therapy_ratings', 0);
+    }
+
+    public function test_rating_relationships(): void
+    {
+        $rating = TherapyRating::factory()->create();
+
+        $this->assertTrue($rating->therapy->ratings->first()->is($rating));
+        $this->assertTrue($rating->agent->therapyRatings->first()->is($rating));
     }
 
     public function test_pivot_relationship_works_from_both_sides(): void

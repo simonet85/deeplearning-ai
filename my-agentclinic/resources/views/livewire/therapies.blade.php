@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\Agent;
 use App\Models\Ailment;
 use App\Models\Therapy;
+use App\Models\TherapyRating;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
@@ -22,11 +24,45 @@ new class extends Component
     /** @var array<int, int|string> */
     public array $ailmentIds = [];
 
+    public ?int $ratingAgentId = null;
+
+    public ?int $ratingTherapyId = null;
+
+    public ?int $ratingValue = null;
+
     /** @return Collection<int, Therapy> */
     #[Computed]
     public function therapies(): Collection
     {
-        return Therapy::with('ailments')->orderBy('name')->get();
+        return Therapy::with('ailments')
+            ->withAvg('ratings', 'rating')
+            ->withCount('ratings')
+            ->orderBy('name')
+            ->get();
+    }
+
+    /** @return Collection<int, Agent> */
+    #[Computed]
+    public function agents(): Collection
+    {
+        return Agent::orderBy('name')->get();
+    }
+
+    public function rate(): void
+    {
+        $validated = $this->validate([
+            'ratingAgentId' => ['required', 'exists:agents,id'],
+            'ratingTherapyId' => ['required', 'exists:therapies,id'],
+            'ratingValue' => ['required', 'integer', 'min:1', 'max:5'],
+        ]);
+
+        TherapyRating::updateOrCreate(
+            ['agent_id' => $validated['ratingAgentId'], 'therapy_id' => $validated['ratingTherapyId']],
+            ['rating' => $validated['ratingValue']],
+        );
+
+        $this->reset('ratingAgentId', 'ratingTherapyId', 'ratingValue');
+        unset($this->therapies);
     }
 
     /** @return Collection<int, Ailment> */
@@ -149,6 +185,42 @@ new class extends Component
         </form>
     @endif
 
+    <form wire:submit="rate" class="grid gap-4 sm:grid-cols-3">
+        <h3 class="text-lg font-semibold text-gray-800 sm:col-span-3">{{ __('Rate a therapy') }}</h3>
+
+        <div>
+            <x-input-label for="ratingAgentId" :value="__('Patient')" />
+            <select id="ratingAgentId" wire:model="ratingAgentId" class="touch-target mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">{{ __('Select an agent') }}</option>
+                @foreach ($this->agents as $agent)
+                    <option value="{{ $agent->id }}">{{ $agent->name }}</option>
+                @endforeach
+            </select>
+            <x-input-error :messages="$errors->get('ratingAgentId')" class="mt-2" />
+        </div>
+
+        <div>
+            <x-input-label for="ratingTherapyId" :value="__('Therapy')" />
+            <select id="ratingTherapyId" wire:model="ratingTherapyId" class="touch-target mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">{{ __('Select a therapy') }}</option>
+                @foreach ($this->therapies as $therapy)
+                    <option value="{{ $therapy->id }}">{{ $therapy->name }}</option>
+                @endforeach
+            </select>
+            <x-input-error :messages="$errors->get('ratingTherapyId')" class="mt-2" />
+        </div>
+
+        <div>
+            <x-input-label for="ratingValue" :value="__('Rating (1-5)')" />
+            <x-text-input id="ratingValue" type="number" min="1" max="5" wire:model="ratingValue" class="touch-target mt-1 block w-full" />
+            <x-input-error :messages="$errors->get('ratingValue')" class="mt-2" />
+        </div>
+
+        <div class="sm:col-span-3">
+            <x-primary-button>{{ __('Submit rating') }}</x-primary-button>
+        </div>
+    </form>
+
     <div>
         <h3 class="text-lg font-semibold text-gray-800">{{ __('Therapy catalog') }}</h3>
         <ul class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -157,6 +229,13 @@ new class extends Component
                     <div class="font-semibold text-gray-900">{{ $therapy->name }}</div>
                     <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $therapy->type }} · {{ $therapy->duration }} {{ __('min') }}</div>
                     <p class="mt-2 text-sm text-gray-600">{{ $therapy->description }}</p>
+                    <p class="mt-2 text-sm font-medium text-gray-700">
+                        @if ($therapy->ratings_count > 0)
+                            {{ __('Rated :avg/5 (:count)', ['avg' => number_format($therapy->ratings_avg_rating, 1), 'count' => $therapy->ratings_count]) }}
+                        @else
+                            {{ __('No ratings yet') }}
+                        @endif
+                    </p>
                     @if ($therapy->ailments->isNotEmpty())
                         <p class="mt-2 text-xs text-gray-500">{{ __('Treats:') }} {{ $therapy->ailments->pluck('name')->sort()->join(', ') }}</p>
                     @endif

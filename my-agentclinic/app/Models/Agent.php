@@ -14,6 +14,12 @@ class Agent extends Model
     /** @use HasFactory<AgentFactory> */
     use HasFactory;
 
+    /** @return HasMany<TherapyRating, $this> */
+    public function therapyRatings(): HasMany
+    {
+        return $this->hasMany(TherapyRating::class);
+    }
+
     /** @return HasMany<AgentAilment, $this> */
     public function agentAilments(): HasMany
     {
