@@ -12,6 +12,10 @@ Route::view('ailments', 'ailments')
     ->middleware(['auth', 'verified'])
     ->name('ailments');
 
+Route::view('therapies', 'therapies')
+    ->middleware(['auth', 'verified'])
+    ->name('therapies');
+
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
