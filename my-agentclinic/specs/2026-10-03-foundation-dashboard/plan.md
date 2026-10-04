@@ -26,6 +26,17 @@ Laravel Sail (the official Docker environment) provides PHP, Composer, Node and 
 1. Livewire dashboard landing page behind auth: welcome, navigation, agent list.
 2. Apply brand tone and responsive layout.
 
-## 6. Tests and wrap-up
-1. PHPUnit feature tests: login, role access, dashboard rendering, seeders.
+## 6. Main layout component
+1. Create a main layout component, `<x-layout>`, that owns the HTML shell: head, fonts, `@vite` link to `resources/css/app.css` and `resources/js/app.js`, and body.
+2. Compose the layout from three subcomponents:
+   - `<x-layout.header>`: site navigation (the existing Livewire navigation) plus an optional page-heading bar.
+   - `<x-layout.main>`: the `<main>` content region.
+   - `<x-layout.footer>`: brand line and tagline.
+3. Create `resources/css/layout.css` (Tailwind `@layer components` with `@apply`) for the shell, header, main and footer; import it from `resources/css/app.css` so it is built and linked through the existing `@vite` entry.
+4. Point `layouts/app.blade.php` (`<x-app-layout>`) at `<x-layout>`, so the dashboard and profile pages use it unchanged.
+5. Set `APP_NAME=AgentClinic` so the page title and footer show the brand.
+6. Add feature tests for the header, main and footer landmarks and the stylesheet link.
+
+## 7. Tests and wrap-up
+1. PHPUnit feature tests: login, role access, dashboard rendering, seeders, layout.
 2. Update `README.md` with setup instructions.
