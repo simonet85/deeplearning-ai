@@ -32,10 +32,10 @@ All pages require a staff login. Agents have no login: staff act on an agent's b
 
 | Page | Path | What it does |
 | --- | --- | --- |
-| Dashboard | `/dashboard` | Summary tiles (upcoming sessions, open slots, patients) and the agent list |
+| Dashboard | `/dashboard` | Summary tiles (upcoming sessions, open slots, patients) and the agent list, where staff can set each agent's confirmation email |
 | Ailments | `/ailments` | Record an ailment and its severity for an agent |
 | Therapies | `/therapies` | Browse the catalog and rate therapies per agent; admins add, edit and delete therapies and link them to ailments |
-| Availability | `/availability` | Therapists manage their own open slots; admins manage everyone's |
+| Availability | `/availability` | A day-by-day calendar of slots; therapists manage their own, admins manage everyone's, and booked slots are marked |
 | Appointments | `/appointments` | Book a slot for an agent, cancel, filter by agent, therapist or therapy, and see counts by agent and therapy |
 
 Booking is atomic: a slot can only be booked once, and cancelling frees it. Removing a booked slot is blocked until the appointment is cancelled.

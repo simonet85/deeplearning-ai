@@ -27,7 +27,7 @@ new class extends Component
     #[Computed]
     public function slots(): Collection
     {
-        return Availability::with('therapist')
+        return Availability::with(['therapist', 'appointment'])
             ->when(! auth()->user()->isAdmin(), fn ($query) => $query->where('therapist_id', auth()->id()))
             ->orderBy('date')
             ->orderBy('time_slot')
@@ -115,20 +115,31 @@ new class extends Component
     </form>
 
     <div>
-        <h3 class="text-lg font-semibold text-gray-800">{{ __('Open slots') }}</h3>
+        <h3 class="text-lg font-semibold text-gray-800">{{ __('Availability calendar') }}</h3>
         <x-input-error :messages="$errors->get('slot')" class="mt-2" />
-        <ul class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            @forelse ($this->slots as $slot)
-                <li wire:key="slot-{{ $slot->id }}" class="flex items-center justify-between gap-2 rounded-lg border border-gray-200 p-4">
-                    <div>
-                        <div class="font-semibold text-gray-900">{{ $slot->date->format('D, M j') }} · {{ $slot->time_slot }}</div>
-                        <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $slot->therapist->name }}</div>
-                    </div>
-                    <x-danger-button type="button" wire:click="remove({{ $slot->id }})" wire:confirm="{{ __('Remove this slot?') }}">{{ __('Remove') }}</x-danger-button>
-                </li>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            @forelse ($this->slots->groupBy(fn ($slot) => $slot->date->toDateString()) as $day => $daySlots)
+                <section wire:key="day-{{ $day }}" class="rounded-lg border border-gray-200">
+                    <h4 class="border-b border-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-800">{{ $daySlots->first()->date->format('D, M j') }}</h4>
+                    <ul class="divide-y divide-gray-100">
+                        @foreach ($daySlots as $slot)
+                            <li wire:key="slot-{{ $slot->id }}" class="flex items-center justify-between gap-2 px-4 py-3">
+                                <div>
+                                    <div class="font-semibold text-gray-900">{{ $slot->time_slot }}</div>
+                                    <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $slot->therapist->name }}</div>
+                                </div>
+                                @if ($slot->appointment)
+                                    <span class="rounded bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">{{ __('Booked') }}</span>
+                                @else
+                                    <x-danger-button type="button" wire:click="remove({{ $slot->id }})" wire:confirm="{{ __('Remove this slot?') }}">{{ __('Remove') }}</x-danger-button>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                </section>
             @empty
-                <li class="text-sm text-gray-500">{{ __('No open slots. The couch sits empty, unbooked and slightly judgmental.') }}</li>
+                <p class="text-sm text-gray-500 sm:col-span-2 lg:col-span-3">{{ __('No open slots. The couch sits empty, unbooked and slightly judgmental.') }}</p>
             @endforelse
-        </ul>
+        </div>
     </div>
 </div>

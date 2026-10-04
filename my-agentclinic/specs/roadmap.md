@@ -9,11 +9,11 @@ Since Livewire is component-driven, we build user-facing features first. Databas
 **Goal**: Agents and staff see a working, delightful interface.
 
 ### Deliverables
-- [ ] Laravel project scaffolding (auth, migrations, Livewire setup)
-- [ ] Agent & Staff roles and basic auth
-- [ ] Dashboard landing page with welcome + navigation
-- [ ] Core data models: `Agent`, `User` (staff/therapist)
-- [ ] Seed data: sample agents and staff members
+- [x] Laravel project scaffolding (auth, migrations, Livewire setup)
+- [x] Agent & Staff roles and basic auth
+- [x] Dashboard landing page with welcome + navigation
+- [x] Core data models: `Agent`, `User` (staff/therapist)
+- [x] Seed data: sample agents and staff members
 
 ### Database
 - `agents` table (name, agent_type, bio)

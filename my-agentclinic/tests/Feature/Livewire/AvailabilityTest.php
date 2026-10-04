@@ -204,6 +204,31 @@ class AvailabilityTest extends TestCase
         $this->assertDatabaseCount('availability', 0);
     }
 
+    public function test_slots_are_grouped_under_one_heading_per_day(): void
+    {
+        $me = User::factory()->create();
+        $day = now()->addDays(2);
+        Availability::factory()->create(['therapist_id' => $me->id, 'date' => $day->toDateString(), 'time_slot' => '09:00']);
+        Availability::factory()->create(['therapist_id' => $me->id, 'date' => $day->toDateString(), 'time_slot' => '14:00']);
+        Availability::factory()->create(['therapist_id' => $me->id, 'date' => now()->addDays(4)->toDateString(), 'time_slot' => '10:00']);
+
+        $html = Volt::actingAs($me)->test('availability')
+            ->assertSee('Availability calendar')
+            ->assertSeeInOrder([$day->format('D, M j'), '09:00', '14:00', now()->addDays(4)->format('D, M j'), '10:00'])
+            ->html();
+
+        $this->assertSame(1, substr_count($html, $day->format('D, M j')));
+    }
+
+    public function test_a_booked_slot_shows_a_badge_instead_of_a_remove_button(): void
+    {
+        $appointment = Appointment::factory()->create();
+
+        Volt::actingAs(User::factory()->admin()->create())->test('availability')
+            ->assertSee('Booked')
+            ->assertDontSee('wire:click="remove');
+    }
+
     public function test_a_booked_slot_cannot_be_removed(): void
     {
         $appointment = Appointment::factory()->create();

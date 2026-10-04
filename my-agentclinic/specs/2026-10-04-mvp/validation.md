@@ -26,5 +26,4 @@ Run in headed Chrome against the Sail app on 2026-10-04 with a Playwright script
 - [x] No dead code (the 100% coverage gate enforces this).
 
 ## Known gaps
-- Agents have no UI to set an email address; confirmation emails only reach agents seeded with one.
-- The availability page is a list, not a calendar view.
+- Confirmation emails only reach agents that have an email address (set it with "Edit email" on the dashboard).
