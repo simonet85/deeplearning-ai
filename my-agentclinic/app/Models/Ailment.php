@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use Database\Factories\AgentFactory;
+use Database\Factories\AilmentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'agent_type', 'bio'])]
-class Agent extends Model
+#[Fillable(['name', 'description', 'severity_scale'])]
+class Ailment extends Model
 {
-    /** @use HasFactory<AgentFactory> */
+    /** @use HasFactory<AilmentFactory> */
     use HasFactory;
 
     /** @return HasMany<AgentAilment, $this> */
