@@ -25,6 +25,10 @@ Run on 2026-10-04: 20 checks, all passing.
 - [x] `README.md`, `CHANGELOG.md` and `specs/roadmap.md` are updated.
 - [x] No dead code (the 100% coverage gate enforces this).
 
+## Docker services
+- [x] `sail up -d` starts `queue`, `scheduler` and `mailpit` alongside the app and Postgres.
+- [x] End to end, with no manual worker: `reminders:send` queued a job, the `queue` container processed it (`DONE`), and the reminder for `beacon@agents.test` appeared in Mailpit (http://localhost:8025). No failed or pending jobs.
+
 ## Known gaps
-- The scheduler and the queue worker are separate processes that must be started by hand (`sail artisan schedule:work` and `sail artisan queue:work`); nothing starts them automatically in Sail.
+- The `queue` and `scheduler` containers add two PHP processes to the Sail stack; on a machine short of memory, stop them with `sail stop queue scheduler` and run the commands by hand.
 - The appointment was created in the database for the browser run, because the booking form only offers slots that have not started and the 24-hour window made a real booking impractical to wait for.
