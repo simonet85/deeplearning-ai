@@ -42,6 +42,16 @@ Booking is atomic: a slot can only be booked once, and cancelling frees it. Remo
 
 ### Confirmation emails
 
-Booking sends a confirmation to the agent when the agent has an email address (seeded agents do, for example `pixel@agents.test`). In development the `log` mailer is used, so read the emails in `storage/logs/laravel.log`. Set the `MAIL_*` variables in `.env` to send real mail.
+Booking sends a confirmation to the agent when the agent has an email address (seeded agents do, for example `pixel@agents.test`). In development every e-mail is caught by [Mailpit](https://mailpit.axllent.org), a mail server that runs in Docker with the rest of the stack and never sends anything for real. Open its inbox at http://localhost:8025 (SMTP is `mailpit:1025`, set in `.env` as `MAIL_MAILER=smtp`). To send real mail instead, point the `MAIL_*` variables in `.env` at your provider.
+
+
+### Appointment reminders
+
+A reminder e-mail goes to the agent about 24 hours before a booked appointment (once only, and not when the appointment was booked inside that window, since the confirmation covers it). Nothing to start by hand: `sail up -d` also runs two background services, defined in `compose.yaml`:
+
+- `scheduler` runs `php artisan schedule:work`, which calls `reminders:send` every hour.
+- `queue` runs `php artisan queue:listen`, which sends the queued reminder e-mails.
+
+To try it right away, book an appointment that starts within 24 hours (or create one with a factory), run `sail artisan reminders:send`, and open http://localhost:8025: the reminder arrives within a few seconds and the appointment card shows "Reminder sent". Follow the services with `sail logs -f queue scheduler`.
 
 Tests: `sail test` runs the PHPUnit suite (feature, Livewire component and unit tests) against a separate `testing` database. `sail composer test:coverage` enforces 100% line coverage of `app/`. Both must pass before merging.
