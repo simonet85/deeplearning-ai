@@ -32,6 +32,12 @@ new class extends Component
         <p class="mt-1 text-sm text-gray-600">
             {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
         </p>
+
+        @if (auth()->user()->agent)
+            <p class="mt-1 text-sm text-gray-600">
+                {{ __('Your agent record and your session history stay with the clinic, but you will no longer be able to sign in.') }}
+            </p>
+        @endif
     </header>
 
     <x-danger-button
