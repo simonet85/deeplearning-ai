@@ -15,6 +15,12 @@ class Therapy extends Model
     /** @use HasFactory<TherapyFactory> */
     use HasFactory;
 
+    /** @return HasMany<Appointment, $this> */
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
     /** @return HasMany<TherapyRating, $this> */
     public function ratings(): HasMany
     {

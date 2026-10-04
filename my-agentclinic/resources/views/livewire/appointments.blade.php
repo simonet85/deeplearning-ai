@@ -1,10 +1,13 @@
 <?php
 
 use App\Enums\AppointmentStatus;
+use App\Enums\Role;
 use App\Models\Agent;
 use App\Models\Appointment;
 use App\Models\Availability;
 use App\Models\Therapy;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -18,6 +21,12 @@ new class extends Component
     public ?int $therapyId = null;
 
     public ?int $availabilityId = null;
+
+    public ?int $filterAgentId = null;
+
+    public ?int $filterTherapistId = null;
+
+    public ?int $filterTherapyId = null;
 
     /** @return Collection<int, Agent> */
     #[Computed]
@@ -37,20 +46,47 @@ new class extends Component
     #[Computed]
     public function openSlots(): Collection
     {
-        return Availability::with('therapist')
-            ->whereDoesntHave('appointment')
-            ->whereDate('date', '>=', today())
-            ->orderBy('date')
-            ->orderBy('time_slot')
-            ->get()
-            ->reject(fn (Availability $slot) => $slot->startsAt()->isPast());
+        return Availability::open();
+    }
+
+    /** @return Collection<int, User> */
+    #[Computed]
+    public function therapists(): Collection
+    {
+        return User::where('role', Role::Therapist)->orderBy('name')->get();
     }
 
     /** @return Collection<int, Appointment> */
     #[Computed]
-    public function appointments(): Collection
+    public function upcoming(): Collection
     {
-        return Appointment::with(['agent', 'therapist', 'therapy'])->orderBy('datetime')->get();
+        return $this->filtered()->where('datetime', '>=', now())->orderBy('datetime')->get();
+    }
+
+    /** @return Collection<int, Appointment> */
+    #[Computed]
+    public function past(): Collection
+    {
+        return $this->filtered()->where('datetime', '<', now())->orderByDesc('datetime')->get();
+    }
+
+    public function isFiltered(): bool
+    {
+        return $this->filterAgentId || $this->filterTherapistId || $this->filterTherapyId;
+    }
+
+    public function clearFilters(): void
+    {
+        $this->reset('filterAgentId', 'filterTherapistId', 'filterTherapyId');
+    }
+
+    /** @return Builder<Appointment> */
+    private function filtered(): Builder
+    {
+        return Appointment::with(['agent', 'therapist', 'therapy'])
+            ->when($this->filterAgentId, fn ($query, $id) => $query->where('agent_id', $id))
+            ->when($this->filterTherapistId, fn ($query, $id) => $query->where('therapist_id', $id))
+            ->when($this->filterTherapyId, fn ($query, $id) => $query->where('therapy_id', $id));
     }
 
     public function book(): void
@@ -81,7 +117,7 @@ new class extends Component
         });
 
         $this->reset('agentId', 'therapyId', 'availabilityId');
-        unset($this->openSlots, $this->appointments);
+        unset($this->openSlots, $this->upcoming, $this->past);
     }
 
     public function cancel(int $id): void
@@ -95,7 +131,7 @@ new class extends Component
             ]);
         }
 
-        unset($this->openSlots, $this->appointments);
+        unset($this->openSlots, $this->upcoming, $this->past);
     }
 }; ?>
 
@@ -141,10 +177,50 @@ new class extends Component
         </div>
     </form>
 
+    <div class="grid gap-4 sm:grid-cols-4">
+        <div>
+            <x-input-label for="filterAgentId" :value="__('Filter by patient')" />
+            <select id="filterAgentId" wire:model.live="filterAgentId" class="touch-target mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">{{ __('All agents') }}</option>
+                @foreach ($this->agents as $agent)
+                    <option value="{{ $agent->id }}">{{ $agent->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div>
+            <x-input-label for="filterTherapistId" :value="__('Filter by therapist')" />
+            <select id="filterTherapistId" wire:model.live="filterTherapistId" class="touch-target mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">{{ __('All therapists') }}</option>
+                @foreach ($this->therapists as $therapist)
+                    <option value="{{ $therapist->id }}">{{ $therapist->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div>
+            <x-input-label for="filterTherapyId" :value="__('Filter by therapy')" />
+            <select id="filterTherapyId" wire:model.live="filterTherapyId" class="touch-target mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="">{{ __('All therapies') }}</option>
+                @foreach ($this->therapies as $therapy)
+                    <option value="{{ $therapy->id }}">{{ $therapy->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        @if ($this->isFiltered())
+            <div class="flex items-end">
+                <x-secondary-button type="button" wire:click="clearFilters">{{ __('Clear filters') }}</x-secondary-button>
+            </div>
+        @endif
+    </div>
+
+    @foreach ([__('Upcoming appointments') => $this->upcoming, __('Past appointments') => $this->past] as $heading => $appointments)
+    @if ($appointments->isNotEmpty() || $heading === __('Upcoming appointments'))
     <div>
-        <h3 class="text-lg font-semibold text-gray-800">{{ __('Appointments') }}</h3>
+        <h3 class="text-lg font-semibold text-gray-800">{{ $heading }}</h3>
         <ul class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            @forelse ($this->appointments as $appointment)
+            @forelse ($appointments as $appointment)
                 <li wire:key="appointment-{{ $appointment->id }}" class="rounded-lg border border-gray-200 p-4">
                     <div class="font-semibold text-gray-900">{{ $appointment->agent->name }}</div>
                     <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $appointment->datetime->format('D, M j · H:i') }} · {{ ucfirst($appointment->status->value) }}</div>
@@ -156,8 +232,12 @@ new class extends Component
                     @endif
                 </li>
             @empty
-                <li class="text-sm text-gray-500">{{ __('No appointments yet. Everyone is coping beautifully, or avoiding the couch.') }}</li>
+                <li class="text-sm text-gray-500">
+                    {{ $this->isFiltered() ? __('No appointments match those filters.') : __('No appointments yet. Everyone is coping beautifully, or avoiding the couch.') }}
+                </li>
             @endforelse
         </ul>
     </div>
+    @endif
+    @endforeach
 </div>

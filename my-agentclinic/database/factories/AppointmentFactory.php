@@ -7,6 +7,7 @@ use App\Models\Agent;
 use App\Models\Appointment;
 use App\Models\Availability;
 use App\Models\Therapy;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,20 +17,24 @@ class AppointmentFactory extends Factory
 {
     public function definition(): array
     {
-        $slot = Availability::factory()->create();
-
         return [
             'agent_id' => Agent::factory(),
-            'therapist_id' => $slot->therapist_id,
+            'availability_id' => Availability::factory(),
+            'therapist_id' => fn (array $attributes) => Availability::find($attributes['availability_id'])->therapist_id,
             'therapy_id' => Therapy::factory(),
-            'availability_id' => $slot->id,
-            'datetime' => $slot->startsAt(),
+            'datetime' => fn (array $attributes) => Availability::find($attributes['availability_id'])->startsAt(),
             'status' => AppointmentStatus::Booked,
         ];
     }
 
+    /** A cancelled appointment has released its slot, so no availability row is created for it. */
     public function cancelled(): static
     {
-        return $this->state(fn () => ['status' => AppointmentStatus::Cancelled, 'availability_id' => null]);
+        return $this->state(fn () => [
+            'status' => AppointmentStatus::Cancelled,
+            'availability_id' => null,
+            'therapist_id' => User::factory(),
+            'datetime' => now()->addDay(),
+        ]);
     }
 }

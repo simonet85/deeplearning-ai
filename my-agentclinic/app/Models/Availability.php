@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Collection;
 
 #[Fillable(['therapist_id', 'date', 'time_slot'])]
 class Availability extends Model
@@ -34,6 +35,22 @@ class Availability extends Model
     public function appointment(): HasOne
     {
         return $this->hasOne(Appointment::class);
+    }
+
+    /**
+     * Slots that are not booked and have not started yet, soonest first.
+     *
+     * @return Collection<int, Availability>
+     */
+    public static function open(): Collection
+    {
+        return static::with('therapist')
+            ->whereDoesntHave('appointment')
+            ->whereDate('date', '>=', today())
+            ->orderBy('date')
+            ->orderBy('time_slot')
+            ->get()
+            ->reject(fn (Availability $slot) => $slot->startsAt()->isPast());
     }
 
     public function startsAt(): CarbonInterface

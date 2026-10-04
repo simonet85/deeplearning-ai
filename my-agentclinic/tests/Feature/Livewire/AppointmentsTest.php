@@ -53,8 +53,7 @@ class AppointmentsTest extends TestCase
         $component = $this->staff()
             ->assertSee('Pixel')
             ->assertSee('Context Window Spa')
-            ->assertSee('Dr. Open')
-            ->assertDontSee('Dr. Past');
+            ->assertSee('Dr. Open');
 
         $slots = $component->instance()->openSlots;
         $this->assertCount(1, $slots);
@@ -178,6 +177,61 @@ class AppointmentsTest extends TestCase
         $sooner->agent->update(['name' => 'SoonerAgent']);
 
         $this->staff()->assertSeeInOrder(['SoonerAgent', 'LaterAgent']);
+    }
+
+    public function test_past_appointments_are_listed_separately_most_recent_first(): void
+    {
+        $older = Appointment::factory()->create();
+        $older->update(['datetime' => now()->subDays(10)]);
+        $recent = Appointment::factory()->create();
+        $recent->update(['datetime' => now()->subDay()]);
+        $older->agent->update(['name' => 'OlderAgent']);
+        $recent->agent->update(['name' => 'RecentAgent']);
+
+        $this->staff()
+            ->assertSee('Past appointments')
+            ->assertSeeInOrder(['Upcoming appointments', 'No appointments yet', 'Past appointments', 'RecentAgent', 'OlderAgent']);
+    }
+
+    public function test_past_section_is_hidden_without_past_appointments(): void
+    {
+        Appointment::factory()->create();
+
+        $this->staff()->assertDontSee('Past appointments');
+    }
+
+    public function test_filters_narrow_appointments_by_agent_therapist_and_therapy(): void
+    {
+        $keep = Appointment::factory()->create();
+        $drop = Appointment::factory()->create();
+        $ids = fn ($component) => $component->instance()->upcoming->pluck('id')->sort()->values()->all();
+
+        $component = $this->staff();
+        $this->assertSame([$keep->id, $drop->id], $ids($component));
+
+        $component->set('filterAgentId', $keep->agent_id);
+        $this->assertSame([$keep->id], $ids($component));
+
+        $component->call('clearFilters');
+        $this->assertSame([$keep->id, $drop->id], $ids($component));
+
+        $component->set('filterTherapistId', $drop->therapist_id);
+        $this->assertSame([$drop->id], $ids($component));
+
+        $component->call('clearFilters')->set('filterTherapyId', $keep->therapy_id);
+        $this->assertSame([$keep->id], $ids($component));
+    }
+
+    public function test_filters_show_a_specific_empty_state_and_a_clear_button(): void
+    {
+        Appointment::factory()->create();
+        $other = Agent::factory()->create();
+
+        $this->staff()
+            ->assertDontSee('Clear filters')
+            ->set('filterAgentId', $other->id)
+            ->assertSee('No appointments match those filters.')
+            ->assertSee('Clear filters');
     }
 
     public function test_it_validates_required_and_unknown_ids(): void
