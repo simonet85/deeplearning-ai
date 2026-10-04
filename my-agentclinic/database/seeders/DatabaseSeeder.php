@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             AgentSeeder::class,
             AilmentSeeder::class,
             TherapySeeder::class,
+            AvailabilitySeeder::class,
         ]);
     }
 }

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\Role;
 use App\Models\Agent;
 use App\Models\Ailment;
+use App\Models\Availability;
 use App\Models\Therapy;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,5 +25,6 @@ class SeederTest extends TestCase
         $this->assertGreaterThanOrEqual(3, Ailment::count());
         $this->assertGreaterThanOrEqual(3, Therapy::count());
         $this->assertTrue(Therapy::has('ailments')->exists());
+        $this->assertSame(18, Availability::count());
     }
 }
