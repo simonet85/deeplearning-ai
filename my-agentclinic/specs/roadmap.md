@@ -44,6 +44,11 @@ Shows stakeholders a working product immediately. Establishes UI patterns and br
 - [x] Appointment dashboard: view booked sessions
 - [x] Simple reporting: appointments by agent/therapy
 
+#### Agent Self-Service
+- [x] Agent self-registration (e-mail and password) with a linked agent record
+- [x] Agent area: record own ailments, book and cancel own appointments, edit own profile
+- [x] Data isolation: agents see only their own data and cannot open staff pages
+
 #### Polish & Scale
 - [x] Appointment reminder notifications
 - [ ] Agent wellness scores/metrics

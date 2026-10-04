@@ -28,7 +28,9 @@ Common commands: `sail artisan migrate:fresh --seed`, `sail down`.
 
 ## What's in the app
 
-All pages require a staff login. Agents have no login: staff act on an agent's behalf.
+All pages require a login. There are three roles: **admin** and **therapist** (staff, seeded) and **agent** (self-registered). Staff can act on an agent's behalf; agents see only their own data.
+
+Staff pages (administrators and therapists only; agents get a 403):
 
 | Page | Path | What it does |
 | --- | --- | --- |
@@ -38,7 +40,19 @@ All pages require a staff login. Agents have no login: staff act on an agent's b
 | Availability | `/availability` | A day-by-day calendar of slots; therapists manage their own, admins manage everyone's, and booked slots are marked |
 | Appointments | `/appointments` | Book a slot for an agent, cancel, filter by agent, therapist or therapy, and see counts by agent and therapy |
 
+Agent pages (agents only; staff get a 403). Agents sign up themselves at `/register` and are sent to **My appointments**:
+
+| Page | Path | What it does |
+| --- | --- | --- |
+| My appointments | `/me/appointments` | Book an open slot for yourself, see your upcoming and past sessions, and cancel your own |
+| My ailments | `/me/ailments` | Record your own ailments and see your history |
+| Profile | `/profile` | Add or change your profile photo; change your name, e-mail, agent type, bio and password; or delete your account (your agent record and history stay with the clinic) |
+
 Booking is atomic: a slot can only be booked once, and cancelling frees it. Removing a booked slot is blocked until the appointment is cancelled.
+
+### Profile photos
+
+Every user (staff and agents) can add a profile photo on `/profile`: JPG, PNG or WebP, up to 10 MB. A photo that is already small (under 512 KB and no more than 800 px on a side) is kept as uploaded; a larger one is scaled down to fit 800 px and converted to WebP at quality 80 with [Intervention Image](https://image.intervention.io), so avatars stay light. Photos live on a private disk (`storage/app/private/profile-photos`) and are served by `/users/{id}/photo`, which checks who is asking: you can see your own photo, staff can see every photo, and an agent can never see another agent's. The photo shows in the navigation and on each agent's card on the staff dashboard, with the agent's initial as a fallback. After changing front-end classes, rebuild the assets with `sail npm run build`.
 
 ### Confirmation emails
 

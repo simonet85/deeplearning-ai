@@ -14,6 +14,8 @@ Maintained with the `changelog` skill; run it before merging.
 - Added appointment booking: staff book an open slot for an agent, double booking is prevented, and cancelling frees the slot; a booked slot can't be removed.
 - Added appointment filters (agent, therapist, therapy) with upcoming and past lists, a report of appointments by agent and by therapy, and summary tiles on the dashboard.
 - Added a confirmation email sent on booking when the agent has an address; agents gained an optional email and the `log` mailer is used in development.
+- Added profile photos for every user: upload from the profile page, with large images resized to 800 px and converted to WebP by Intervention Image, kept on a private disk and shown in the navigation and on the staff dashboard, visible only to their owner and to staff.
+- Added agent accounts: agents register themselves at `/register` and get their own area to record their ailments, book and cancel their own appointments, and edit their profile, while staff pages are closed to them and each agent sees only their own data.
 - Added appointment reminders: an hourly scheduled command queues one reminder e-mail per booked appointment starting within 24 hours, the card shows "Reminder sent", and the README explains how to run the queue worker and the scheduler.
 - Added a `queue` worker, a `scheduler` and a Mailpit mail catcher to the Docker stack, so reminders run on their own and every e-mail can be read at http://localhost:8025 instead of the log.
 - Added an "Edit email" control on each agent card so staff can set where booking confirmations go, and turned the availability list into a day-by-day calendar that shows booked slots.

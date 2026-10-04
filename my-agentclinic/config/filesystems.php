@@ -38,6 +38,14 @@ return [
             'report' => false,
         ],
 
+        // Profile photos: private, served only through the UserPhotoController after a permission check.
+        'profile_photos' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/profile-photos'),
+            'throw' => false,
+            'report' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

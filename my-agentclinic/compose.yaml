@@ -26,12 +26,13 @@ services:
         depends_on:
             - pgsql
             - mailpit
-    # Sends queued jobs, such as appointment reminder e-mails. `queue:listen` reloads the code for every job,
-    # so edits show up without restarting the container.
+    # Sends queued jobs, such as appointment reminder e-mails. `queue:work` keeps the framework loaded, so after
+    # changing job or mail code run `sail restart queue` (`queue:listen` reloads code but reboots Laravel on every
+    # poll, which is slow on a Windows bind mount).
     queue:
         build: *sail-build
         image: sail-8.5/app
-        command: php artisan queue:listen --tries=3 --sleep=3
+        command: php artisan queue:work --tries=3 --sleep=3
         restart: unless-stopped
         extra_hosts:
             - 'host.docker.internal:host-gateway'

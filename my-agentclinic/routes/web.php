@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserPhotoController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
@@ -23,6 +24,11 @@ Route::middleware(['auth', 'verified', 'role:agent'])->prefix('me')->group(funct
     Route::view('appointments', 'my-appointments')->name('agent.appointments');
     Route::view('ailments', 'my-ailments')->name('agent.ailments');
 });
+
+// Profile photos are served by a route that checks who is asking; see UserPhotoController.
+Route::get('users/{user}/photo', UserPhotoController::class)
+    ->middleware(['auth'])
+    ->name('users.photo');
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])

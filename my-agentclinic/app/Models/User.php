@@ -13,10 +13,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role'])]
+#[Fillable(['name', 'email', 'password', 'role', 'profile_photo_path'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
+    /** The private disk that holds profile photos. */
+    public const PHOTO_DISK = 'profile_photos';
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
