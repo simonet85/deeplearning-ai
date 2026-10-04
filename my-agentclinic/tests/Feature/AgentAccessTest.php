@@ -58,7 +58,7 @@ class AgentAccessTest extends TestCase
 
     public function test_the_agent_area_is_for_agents_only(): void
     {
-        $this->actingAs(User::factory()->agent()->create())->get('/me')->assertRedirect('/profile');
+        $this->actingAs(User::factory()->agent()->create())->get('/me')->assertRedirect('/me/ailments');
 
         $this->actingAs(User::factory()->create())->get('/me')->assertForbidden();
         $this->actingAs(User::factory()->admin()->create())->get('/me')->assertForbidden();

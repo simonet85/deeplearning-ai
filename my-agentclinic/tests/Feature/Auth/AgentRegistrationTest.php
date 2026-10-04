@@ -96,7 +96,7 @@ class AgentRegistrationTest extends TestCase
     {
         $this->fill($this->valid())->call('register');
 
-        $this->get('/me')->assertRedirect('/profile');
+        $this->get('/me')->assertRedirect('/me/ailments');
         $this->get('/profile')->assertOk();
         $this->get('/ailments')->assertForbidden();
     }

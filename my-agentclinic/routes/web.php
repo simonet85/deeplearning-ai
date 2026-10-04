@@ -17,10 +17,11 @@ Route::middleware(['auth', 'verified', 'role:admin,therapist'])->group(function 
     Route::view('appointments', 'appointments')->name('appointments');
 });
 
-// Agent area. Its pages arrive in later slices; until then agents land on their profile.
-Route::redirect('me', '/profile')
-    ->middleware(['auth', 'verified', 'role:agent'])
-    ->name('agent.home');
+// Agent area: agents only, and every page shows only the signed-in agent's own data.
+Route::middleware(['auth', 'verified', 'role:agent'])->prefix('me')->group(function () {
+    Route::redirect('/', '/me/ailments')->name('agent.home');
+    Route::view('ailments', 'my-ailments')->name('agent.ailments');
+});
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])

@@ -47,6 +47,11 @@ new class extends Component
                         {{ __('Appointments') }}
                     </x-nav-link>
                     @endunless
+                    @if (auth()->user()->isAgent())
+                    <x-nav-link :href="route('agent.ailments')" :active="request()->routeIs('agent.ailments')" wire:navigate>
+                        {{ __('My ailments') }}
+                    </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -112,6 +117,11 @@ new class extends Component
                 {{ __('Appointments') }}
             </x-responsive-nav-link>
             @endunless
+            @if (auth()->user()->isAgent())
+            <x-responsive-nav-link :href="route('agent.ailments')" :active="request()->routeIs('agent.ailments')" wire:navigate>
+                {{ __('My ailments') }}
+            </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
