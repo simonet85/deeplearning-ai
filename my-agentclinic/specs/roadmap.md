@@ -31,18 +31,18 @@ Shows stakeholders a working product immediately. Establishes UI patterns and br
 ### Deliverables
 
 #### Ailments & Therapies
-- [ ] Livewire component: Agent ailments list/form
-- [ ] Livewire component: Therapies catalog
-- [ ] Staff dashboard: manage therapies
-- [ ] Agent view: browse and rate therapies
-- [ ] Relationships: `Ailment`, `Therapy`, `AilmentTherapy` (many-to-many)
+- [x] Livewire component: Agent ailments list/form
+- [x] Livewire component: Therapies catalog
+- [x] Staff dashboard: manage therapies
+- [x] Agent view: browse and rate therapies
+- [x] Relationships: `Ailment`, `Therapy`, `AilmentTherapy` (many-to-many)
 
 #### Appointment Booking
-- [ ] Agent: view availability, book appointment
-- [ ] Staff: manage availability calendar
-- [ ] Confirmation emails/notifications
-- [ ] Appointment dashboard: view booked sessions
-- [ ] Simple reporting: appointments by agent/therapy
+- [x] Agent: view availability, book appointment
+- [x] Staff: manage availability calendar
+- [x] Confirmation emails/notifications
+- [x] Appointment dashboard: view booked sessions
+- [x] Simple reporting: appointments by agent/therapy
 
 #### Polish & Scale
 - [ ] Appointment reminder notifications
