@@ -67,6 +67,18 @@ A few rules keep everyone from being locked out: the admin role always keeps `us
 
 Every user (staff and agents) can add a profile photo on `/profile`: JPG, PNG or WebP, up to 10 MB. A photo that is already small (under 512 KB and no more than 800 px on a side) is kept as uploaded; a larger one is scaled down to fit 800 px and converted to WebP at quality 80 with [Intervention Image](https://image.intervention.io), so avatars stay light. Photos live on a private disk (`storage/app/private/profile-photos`) and are served by `/users/{id}/photo`, which checks who is asking: you can see your own photo, staff can see every photo, and an agent can never see another agent's. The photo shows in the navigation and on each agent's card on the staff dashboard, with the agent's initial as a fallback. After changing front-end classes, rebuild the assets with `sail npm run build`.
 
+### Languages (English and French)
+
+The whole app, its e-mails and its error pages are available in English and French. The language is picked automatically, in this order: the language saved on the signed-in user's account, then the `locale` cookie, then the browser's `Accept-Language` header (regions and weights are understood, so `fr-CA,fr;q=0.9` is French), then English. The **EN | FR** switcher in the navigation, on the login and welcome pages and on the error pages saves the choice in a cookie for a year and, when signed in, on the account, so it follows the user to another device. A new account keeps the language the visitor was reading when they signed up. E-mails (confirmations and reminders) are sent in the language of the agent's account, or in English for an agent without one, whoever booked the appointment. Dates and times follow the language (`Mon, Oct 5` / `lun. 5 oct.`, always on a 24-hour clock).
+
+Translations live in `lang/fr.json` (the English text is the key, so the `__('English text')` calls need no English file) and in `lang/fr/*.php` for Laravel's validation, authentication and password messages and for the date styles. Data that people type or that is seeded (ailments, therapies, agent bios, custom role names) is not translated.
+
+To add a language, add its code to `supported_locales` in `config/app.php`, copy `lang/fr.json` and `lang/fr/` to the new code and translate them. Three tests keep this honest: no string used by the app may lack a translation, `lang/fr.json` may not hold an unused entry, and a detector renders every page in a made-up language to prove that no English text was left outside `__()`.
+
+### Error pages
+
+403, 404, 419 (page expired), 429 (too many requests), 500 and 503 (maintenance) have their own pages in the clinic's colors and tone, in both languages, each with a way out chosen by who is looking (the dashboard for staff, My appointments for an agent, the profile for someone who can open neither, the home page for a visitor), a retry button where it makes sense, and the wait time when the response gives one. A 500 never shows technical detail. In the `local` and `testing` environments you can review them at `/_errors/{code}` (add `?retry=90` to see the wait time on 429 and 503); in production that address answers like any unknown URL.
+
 ### Confirmation emails
 
 Booking sends a confirmation to the agent when the agent has an email address (seeded agents do, for example `pixel@agents.test`). In development every e-mail is caught by [Mailpit](https://mailpit.axllent.org), a mail server that runs in Docker with the rest of the stack and never sends anything for real. Open its inbox at http://localhost:8025 (SMTP is `mailpit:1025`, set in `.env` as `MAIL_MAILER=smtp`). To send real mail instead, point the `MAIL_*` variables in `.env` at your provider.

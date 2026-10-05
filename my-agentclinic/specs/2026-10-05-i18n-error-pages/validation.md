@@ -19,7 +19,7 @@ The `i18n-error-pages` branch can merge when all of the following hold.
 - [ ] 403, 404, 419, 429, 500 and 503 each render the designed page, with the right title and message in English and in French.
 - [ ] The way-out buttons are right for a guest, an agent and a staff member; 419 offers a reload and a login for a guest; 429 and 503 show the wait when the response gives one; 500 shows no technical detail.
 - [ ] An unknown URL gives a localized 404 page, and the maintenance page uses the browser's language.
-- [ ] `/_errors/{code}` exists in `local` and `testing` and does not exist in `production`.
+- [ ] `/_errors/{code}` shows the page in `local` and `testing` and answers like an unknown URL (404) in `production`.
 
 ## Browser (automated, Chrome via Playwright)
 - [ ] With a French browser language, a first visit shows the welcome and login pages in French with the switcher on "FR"; with an English browser language, in English.

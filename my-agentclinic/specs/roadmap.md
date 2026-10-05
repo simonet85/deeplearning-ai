@@ -53,6 +53,11 @@ Shows stakeholders a working product immediately. Establishes UI patterns and br
 - [x] Roles and permissions managed with Spatie: roles, permissions per role, roles per user and individual permissions
 - [x] Administration pages for users and roles, with lock-out safeguards
 
+#### Internationalization and Error Pages
+- [x] English and French with automatic language detection, a switcher and a saved preference
+- [x] Everything translated: interface, validation messages, e-mails, dates and times
+- [x] Designed, bilingual error pages (403, 404, 419, 429, 500, 503)
+
 #### Polish & Scale
 - [x] Appointment reminder notifications
 - [ ] Agent wellness scores/metrics
