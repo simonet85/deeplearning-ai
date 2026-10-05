@@ -1,4 +1,5 @@
 <nav class="-mx-3 flex flex-1 justify-end">
+    <x-locale-switcher class="me-2 self-center" />
     @auth
         <a
             href="{{ url('/dashboard') }}"

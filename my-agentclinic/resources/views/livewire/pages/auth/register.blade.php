@@ -45,6 +45,7 @@ new #[Layout('layouts.guest')] class extends Component
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => $validated['password'],
+                'locale' => app()->getLocale(), // the language the visitor was reading when they signed up
             ]);
 
             $user->assignRole(Access::role('agent'));

@@ -1,9 +1,13 @@
 <?php
 
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\UserPhotoController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
+
+// Language switcher: remembers the choice in a cookie and, when signed in, on the account.
+Route::get('locale/{locale}', LocaleController::class)->name('locale');
 
 // The staff dashboard. Someone who can only use the agent area is sent there; anyone else without the
 // permission gets a 403.
@@ -52,3 +56,6 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 require __DIR__.'/auth.php';
+
+// Any other URL: running it through the web middleware means the 404 page is shown in the visitor's language.
+Route::fallback(fn () => abort(404));

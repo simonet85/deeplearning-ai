@@ -82,6 +82,19 @@ return [
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Supported Locales
+    |--------------------------------------------------------------------------
+    |
+    | The languages a visitor can use. The first one is used when nothing else
+    | applies. To add a language, add its code here and a lang/<code>.json file
+    | and lang/<code>/ directory (see the README).
+    |
+    */
+
+    'supported_locales' => ['en', 'fr'],
+
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
     /*
