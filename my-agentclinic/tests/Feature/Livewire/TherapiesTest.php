@@ -272,7 +272,7 @@ class TherapiesTest extends TestCase
             ->set('type', 'Rest')
             ->set('ailmentIds', [999])
             ->call('save')
-            ->assertSee('selected ailmentIds.0 is invalid')
+            ->assertSee('The selected ailment is invalid.')
             ->assertDontSee('<x-input-error', false);
     }
 
