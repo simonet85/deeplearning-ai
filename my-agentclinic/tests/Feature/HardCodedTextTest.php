@@ -209,6 +209,26 @@ class HardCodedTextTest extends TestCase
         }
     }
 
+    public function test_the_error_pages_have_no_hard_coded_text(): void
+    {
+        $f = $this->fixture();
+
+        foreach ([403, 404, 419, 429, 500, 503] as $status) {
+            foreach ([null, $f['admin'], $f['agentUser']] as $visitor) {
+                // ?retry adds the waiting time, so the hints are checked too.
+                $this->assertAllWrapped($this->errorPage($visitor, "/_errors/$status?retry=125", $status), "/_errors/$status");
+            }
+        }
+    }
+
+    /** An error page is not a 200, so it is fetched on its own. */
+    private function errorPage(?User $as, string $url, int $status): string
+    {
+        $request = $as ? $this->actingAs($as) : $this;
+
+        return $request->withCookies(['locale' => 'xx'])->get($url)->assertStatus($status)->getContent();
+    }
+
     public function test_the_verification_page_has_no_hard_coded_text(): void
     {
         $unverified = User::factory()->unverified()->create(['name' => 'Orla Quince']);
