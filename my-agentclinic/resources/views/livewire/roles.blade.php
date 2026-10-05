@@ -196,7 +196,7 @@ new class extends Component
                                 <x-secondary-button type="button" wire:click="cancelRenaming">{{ __('Cancel') }}</x-secondary-button>
                             </form>
                         @else
-                            <h4 class="text-base font-semibold text-gray-900">{{ $role->name }}</h4>
+                            <h4 class="text-base font-semibold text-gray-900">{{ __($role->name) }}</h4>
                         @endif
 
                         @if ($builtIn)

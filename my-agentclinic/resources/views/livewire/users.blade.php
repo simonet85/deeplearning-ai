@@ -163,7 +163,7 @@ new class extends Component
                                 <option value="" selected>{{ __('No role') }}</option>
                             @endunless
                             @foreach ($this->roleNames as $roleName)
-                                <option value="{{ $roleName }}" @selected($currentRole && $currentRole->name === $roleName)>{{ $roleName }}</option>
+                                <option value="{{ $roleName }}" @selected($currentRole && $currentRole->name === $roleName)>{{ __($roleName) }}</option>
                             @endforeach
                         </select>
 

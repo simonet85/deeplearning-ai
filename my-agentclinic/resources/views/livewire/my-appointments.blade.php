@@ -107,7 +107,7 @@ new class extends Component
             <select id="availabilityId" wire:model="availabilityId" class="touch-target mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 <option value="">{{ __('Select a slot') }}</option>
                 @foreach ($this->openSlots as $slot)
-                    <option value="{{ $slot->id }}">{{ $slot->date->format('D, M j') }} · {{ $slot->time_slot }} · {{ $slot->therapist->name }}</option>
+                    <option value="{{ $slot->id }}">{{ $slot->date->localized('short') }} · {{ $slot->time_slot }} · {{ $slot->therapist->name }}</option>
                 @endforeach
             </select>
             <x-input-error :messages="$errors->get('availabilityId')" class="mt-2" />
@@ -125,10 +125,10 @@ new class extends Component
         <ul class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @forelse ($appointments as $appointment)
                 <li wire:key="appointment-{{ $appointment->id }}" class="rounded-lg border border-gray-200 p-4">
-                    <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $appointment->datetime->format('D, M j · H:i') }} · {{ ucfirst($appointment->status->value) }}</div>
+                    <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $appointment->datetime->localized('datetime') }} · {{ __(ucfirst($appointment->status->value)) }}</div>
                     <p class="mt-2 text-sm text-gray-600">{{ $appointment->therapy->name }} {{ __('with') }} {{ $appointment->therapist->name }}</p>
                     @if ($appointment->reminder_sent_at)
-                        <p class="mt-1 text-xs text-gray-500">{{ __('Reminder sent') }} {{ $appointment->reminder_sent_at->format('M j, H:i') }}</p>
+                        <p class="mt-1 text-xs text-gray-500">{{ __('Reminder sent') }} {{ $appointment->reminder_sent_at->localized('stamp') }}</p>
                     @endif
                     @if ($appointment->status === \App\Enums\AppointmentStatus::Booked)
                         <div class="mt-3">

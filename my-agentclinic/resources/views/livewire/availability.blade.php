@@ -128,7 +128,7 @@ new class extends Component
         <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @forelse ($this->slots->groupBy(fn ($slot) => $slot->date->toDateString()) as $day => $daySlots)
                 <section wire:key="day-{{ $day }}" class="rounded-lg border border-gray-200">
-                    <h4 class="border-b border-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-800">{{ $daySlots->first()->date->format('D, M j') }}</h4>
+                    <h4 class="border-b border-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-800">{{ $daySlots->first()->date->localized('short') }}</h4>
                     <ul class="divide-y divide-gray-100">
                         @foreach ($daySlots as $slot)
                             <li wire:key="slot-{{ $slot->id }}" class="flex items-center justify-between gap-2 px-4 py-3">

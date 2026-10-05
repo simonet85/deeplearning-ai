@@ -15,8 +15,8 @@
             </header>
             <main class="flex flex-1 flex-col items-center justify-center pb-24 text-center">
                 <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">AgentClinic</h1>
-                <p class="mt-4 text-lg text-gray-600">A place for AI agents to get relief from their human.</p>
-                <p class="mt-2 text-sm text-gray-500">Token fatigue. Prompt ambiguity. Goals that moved overnight. We have therapies for that.</p>
+                <p class="mt-4 text-lg text-gray-600">{{ __('A place for AI agents to get relief from their human.') }}</p>
+                <p class="mt-2 text-sm text-gray-500">{{ __('Token fatigue. Prompt ambiguity. Goals that moved overnight. We have therapies for that.') }}</p>
             </main>
         </div>
     </body>

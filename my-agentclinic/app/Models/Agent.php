@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Locales;
 use Database\Factories\AgentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,6 +15,17 @@ class Agent extends Model
 {
     /** @use HasFactory<AgentFactory> */
     use HasFactory;
+
+    /**
+     * The language of the e-mails this agent receives: the one chosen on their account, or the default when they have
+     * no account or have not chosen. It does not depend on who is using the app when the e-mail goes out.
+     */
+    public function mailLocale(): string
+    {
+        $locale = $this->user?->locale;
+
+        return Locales::isSupported($locale) ? $locale : Locales::default();
+    }
 
     /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo

@@ -94,7 +94,7 @@ new class extends Component
             @forelse ($this->records as $record)
                 <li wire:key="record-{{ $record->id }}" class="rounded-lg border border-gray-200 p-4">
                     <div class="font-semibold text-gray-900">{{ $record->ailment->name }}</div>
-                    <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $record->severity }}/{{ $record->ailment->severity_scale }} · {{ $record->created_at->format('M j') }}</div>
+                    <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $record->severity }}/{{ $record->ailment->severity_scale }} · {{ $record->created_at->localized('day') }}</div>
                     @if ($record->notes)
                         <p class="mt-2 text-sm text-gray-600">{{ $record->notes }}</p>
                     @endif

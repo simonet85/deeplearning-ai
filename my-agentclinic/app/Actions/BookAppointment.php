@@ -43,7 +43,7 @@ class BookAppointment
         });
 
         if ($agent->email) {
-            Mail::to($agent->email)->send(new AppointmentBooked($appointment));
+            Mail::to($agent->email)->locale($agent->mailLocale())->send(new AppointmentBooked($appointment));
         }
 
         return $appointment;
