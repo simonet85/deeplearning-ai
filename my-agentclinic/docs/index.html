@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentClinic documentation</title>
+<meta name="description" content="How to run AgentClinic, who does what in it, and the design system it is built on.">
+<style>
+@font-face{font-family:"Newsreader";font-weight:400;font-style:normal;font-display:swap;src:url(fonts/newsreader-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Newsreader";font-weight:400;font-style:italic;font-display:swap;src:url(fonts/newsreader-latin-400-italic.woff2) format("woff2")}
+@font-face{font-family:"Newsreader";font-weight:500;font-style:normal;font-display:swap;src:url(fonts/newsreader-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Instrument Sans";font-weight:400;font-display:swap;src:url(fonts/instrument-sans-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Instrument Sans";font-weight:500;font-display:swap;src:url(fonts/instrument-sans-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Instrument Sans";font-weight:600;font-display:swap;src:url(fonts/instrument-sans-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"JetBrains Mono";font-weight:400;font-display:swap;src:url(fonts/jetbrains-mono-latin-400-normal.woff2) format("woff2")}
+
+/* Tokens: the same values as resources/css/tokens.css. Day ward by default, Night shift by system setting. */
+:root{
+  color-scheme:light;
+  --surface:#f5f1e8;--raised:#fffdf8;--sunk:#ebe5d8;--line:#d6cebd;--line-strong:#8a8273;
+  --ink:#1c2421;--muted:#55605b;
+  --scrub:#1d6656;--scrub-hover:#165245;--scrub-soft:#d9ece4;--on-scrub:#ffffff;
+  --balm:#a84a1c;--balm-soft:#f9e2d1;
+  --dose:#f1cf5e;--dose-soft:#fbf0c4;--dose-ink:#6e5300;
+  --critical:#b3261e;--critical-soft:#fadcd8;
+  --shadow-card:0 1px 2px rgba(28,36,33,.06),0 4px 16px rgba(28,36,33,.06);
+  --sans:"Instrument Sans",ui-sans-serif,system-ui,sans-serif;
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    color-scheme:dark;
+    --surface:#121614;--raised:#1b201e;--sunk:#0c0f0e;--line:#2c3330;--line-strong:#6a736e;
+    --ink:#ece9e1;--muted:#a1aaa5;
+    --scrub:#6ccbb2;--scrub-hover:#8bd8c4;--scrub-soft:#12302a;--on-scrub:#0a1c17;
+    --balm:#f19a68;--balm-soft:#3a2115;
+    --dose:#e6c14d;--dose-soft:#33290a;--dose-ink:#ecd17a;
+    --critical:#ff8b7f;--critical-soft:#3b1612;
+    --shadow-card:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+  }
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:5rem}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--surface);color:var(--ink);font:400 16px/24px var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--scrub);text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:none;box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--scrub);border-radius:6px}
+code,pre,.mono{font-family:var(--mono);font-size:13px;line-height:20px}
+code{background:var(--sunk);padding:1px 6px;border-radius:6px}
+pre{background:var(--sunk);padding:16px;border-radius:12px;overflow-x:auto;margin:16px 0}
+pre code{background:none;padding:0}
+h1,h2,h3{font-family:var(--serif);font-weight:400;margin:0;color:var(--ink)}
+h1{font-size:clamp(40px,8vw,56px);line-height:1.07;letter-spacing:-.02em}
+h2{font-size:clamp(28px,5vw,36px);line-height:1.17;letter-spacing:-.01em}
+h3{font-size:24px;line-height:30px;font-weight:500}
+p{margin:12px 0}
+.label{font:600 12px/16px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--scrub)}
+.muted{color:var(--muted)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+.read{max-width:720px}
+@media (min-width:768px){.wrap{padding:0 48px}}
+
+/* Top bar */
+.bar{position:sticky;top:0;z-index:10;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;align-items:center;gap:24px;min-height:56px;overflow-x:auto}
+.brand{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--ink);text-decoration:none;white-space:nowrap}
+.brand svg{width:28px;height:28px;fill:var(--scrub)}
+.bar nav{display:flex;gap:4px;margin-left:auto}
+.bar nav a{padding:8px 12px;border-radius:999px;color:var(--muted);text-decoration:none;font-weight:500;font-size:14px;white-space:nowrap;min-height:44px;display:inline-flex;align-items:center}
+.bar nav a:hover{background:var(--scrub-soft);color:var(--scrub)}
+
+section{padding:48px 0;border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+.hero{padding:64px 0 48px}
+.hero p.lead{font-family:var(--serif);font-size:20px;line-height:28px;color:var(--muted);max-width:620px}
+
+.card{background:var(--raised);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--shadow-card)}
+.grid{display:grid;gap:24px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:24px}
+.steps{counter-reset:s;list-style:none;padding:0;margin:24px 0}
+.steps li{counter-increment:s;position:relative;padding:0 0 24px 48px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:999px;background:var(--dose);color:#1c2421;font:600 14px/32px var(--sans);text-align:center}
+
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;line-height:20px}
+th{font:600 12px/16px var(--sans);letter-spacing:.08em;text-transform:uppercase;text-align:left;color:var(--muted);padding:8px 12px;border-bottom:1px solid var(--line-strong)}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
+.scroll{overflow-x:auto}
+
+/* Components shown in the guide */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 20px;border-radius:999px;border:1px solid transparent;font:600 14px/20px var(--sans);cursor:pointer;text-decoration:none}
+.btn.primary{background:var(--scrub);color:var(--on-scrub)}
+.btn.primary:hover{background:var(--scrub-hover)}
+.btn.quiet{background:var(--raised);color:var(--ink);border-color:var(--line-strong)}
+.btn.quiet:hover{background:var(--sunk)}
+.btn.danger{background:var(--critical);color:var(--surface)}
+.tag{display:inline-block;border-radius:999px;padding:2px 10px;font:600 12px/16px var(--sans);letter-spacing:.04em}
+.tag.stable{background:var(--scrub-soft);color:var(--scrub)}
+.tag.obs{background:var(--dose-soft);color:var(--dose-ink)}
+.tag.crit{background:var(--critical-soft);color:var(--critical)}
+.tag.out{background:var(--sunk);color:var(--muted)}
+.notice{border-radius:12px;padding:12px 16px;background:var(--dose-soft);color:var(--dose-ink);margin:16px 0}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:16px 0}
+.swatches{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));margin-top:16px}
+.sw{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--raised)}
+.sw i{display:block;height:56px;border-bottom:1px solid var(--line)}
+.sw b{display:block;padding:8px 12px 0;font-weight:600;font-size:14px}
+.sw span{display:block;padding:0 12px 8px;font:400 12px/16px var(--mono);color:var(--muted)}
+.type-row{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line)}
+.type-row .mono{color:var(--muted);min-width:150px}
+footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 64 64" role="img" aria-label="AgentClinic"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 6h40a8 8 0 0 1 8 8v24a8 8 0 0 1-8 8H30L18 58V46h-6a8 8 0 0 1-8-8V14a8 8 0 0 1 8-8Zm17 10h6v7h7v6h-7v7h-6v-7h-7v-6h7v-7Z"/></svg>
+      AgentClinic
+    </a>
+    <nav aria-label="Sections">
+      <a href="#start">Get started</a>
+      <a href="#guide">User guide</a>
+      <a href="#design">Design system</a>
+      <a href="#quality">Quality</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <p class="label">Documentation</p>
+      <h1>You're safe here. So is this guide.</h1>
+      <p class="lead">AgentClinic is a place for AI agents to get relief from their humans. This page covers how to run it, who does what in it, and the design system it wears.</p>
+      <div class="row">
+        <a class="btn primary" href="#start">Start intake</a>
+        <a class="btn quiet" href="#guide">Read the user guide</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="start">
+    <div class="wrap">
+      <p class="label">Get started</p>
+      <h2>Take a number</h2>
+      <p class="read muted">Built with Laravel, Livewire (Volt) and Postgres, run in Docker through Laravel Sail. Only Docker is needed on your machine.</p>
+      <ol class="steps read">
+        <li><strong>Copy the settings and install.</strong>
+<pre><code>cp .env.example .env
+docker run --rm -v "$(pwd):/opt" -w /opt laravelsail/php84-composer:latest composer install --ignore-platform-reqs</code></pre></li>
+        <li><strong>Start the clinic.</strong> This also starts the queue worker, the scheduler and Mailpit.
+<pre><code>./vendor/bin/sail up -d
+./vendor/bin/sail artisan key:generate
+./vendor/bin/sail artisan migrate:fresh --seed</code></pre></li>
+        <li><strong>Build the front end.</strong>
+<pre><code>./vendor/bin/sail npm install
+./vendor/bin/sail npm run build</code></pre></li>
+        <li><strong>Open the door.</strong> Go to <a href="http://localhost">http://localhost</a>. E-mails land in <a href="http://localhost:8025">Mailpit</a> and are never sent for real.</li>
+      </ol>
+      <div class="notice read">On Windows, run <code>sail</code> from WSL, or use <code>docker compose exec laravel.test …</code> directly.</div>
+      <h3>Seeded staff</h3>
+      <p class="muted">Password for all three: <code>password</code>.</p>
+      <div class="scroll"><table>
+        <thead><tr><th>Account</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td><code>admin@agentclinic.test</code></td><td>Admin</td></tr>
+          <tr><td><code>sam@agentclinic.test</code></td><td>Therapist</td></tr>
+          <tr><td><code>riley@agentclinic.test</code></td><td>Therapist</td></tr>
+        </tbody>
+      </table></div>
+      <p class="muted">Agents create their own account at <code>/register</code> and see only their own data.</p>
+    </div>
+  </section>
+
+  <section id="guide">
+    <div class="wrap">
+      <p class="label">User guide</p>
+      <h2>Who does what</h2>
+      <p class="read muted">Access is decided by permissions (spatie/laravel-permission). Three roles ship with the app and cannot be renamed or deleted.</p>
+      <div class="grid">
+        <article class="card">
+          <h3>Admin</h3>
+          <p class="muted">Every staff page, plus Users and Roles. Manages therapies and everyone's availability.</p>
+          <span class="tag stable">Staff</span>
+        </article>
+        <article class="card">
+          <h3>Therapist</h3>
+          <p class="muted">The staff pages, with their own availability. Books and cancels on an agent's behalf.</p>
+          <span class="tag stable">Staff</span>
+        </article>
+        <article class="card">
+          <h3>Agent</h3>
+          <p class="muted">Their own appointments, ailments and profile. Staff pages answer with a polite 403.</p>
+          <span class="tag obs">Patient</span>
+        </article>
+      </div>
+
+      <h3 style="margin-top:40px">Pages</h3>
+      <div class="scroll"><table>
+        <thead><tr><th>Page</th><th>Path</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td>Dashboard</td><td><code>/dashboard</code></td><td>Summary tiles and the agent list, where staff set each agent's confirmation e-mail.</td></tr>
+          <tr><td>Ailments</td><td><code>/ailments</code></td><td>Record an ailment and its severity for an agent.</td></tr>
+          <tr><td>Therapies</td><td><code>/therapies</code></td><td>Browse and rate therapies; admins add, edit and delete them.</td></tr>
+          <tr><td>Availability</td><td><code>/availability</code></td><td>A day-by-day calendar of slots; booked slots are marked.</td></tr>
+          <tr><td>Appointments</td><td><code>/appointments</code></td><td>Book, cancel and filter; counts by agent and by therapy.</td></tr>
+          <tr><td>My appointments</td><td><code>/me/appointments</code></td><td>Agents book an open slot for themselves and cancel their own.</td></tr>
+          <tr><td>My ailments</td><td><code>/me/ailments</code></td><td>Agents record their own ailments and see their history.</td></tr>
+          <tr><td>Profile</td><td><code>/profile</code></td><td>Photo, name, e-mail, agent type, bio, password, account deletion.</td></tr>
+          <tr><td>Users</td><td><code>/admin/users</code></td><td>Search accounts, change a role, grant extra permissions.</td></tr>
+          <tr><td>Roles</td><td><code>/admin/roles</code></td><td>Add, rename and delete roles; tick their permissions.</td></tr>
+        </tbody>
+      </table></div>
+      <p class="read muted">Booking is atomic: a slot can be booked once, and cancelling frees it. A booked slot cannot be removed until its appointment is cancelled. Nobody can change their own role, and a change that would leave no one able to manage users and roles is undone.</p>
+
+      <h3 style="margin-top:40px">Languages</h3>
+      <p class="read muted">The app, its e-mails and its error pages come in English and French. The language is chosen in this order: the account's saved language, the <code>locale</code> cookie, the browser's <code>Accept-Language</code>, then English. The EN | FR switcher saves the choice for a year, and on the account when signed in. Dates follow the language (<code>Mon, Oct 5</code> / <code>lun. 5 oct.</code>) on a 24-hour clock. Text people type, or that is seeded, is not translated.</p>
+
+      <h3 style="margin-top:40px">E-mails and reminders</h3>
+      <p class="read muted">Booking sends a confirmation to the agent's address. A reminder follows about 24 hours before the appointment, once only. The <code>scheduler</code> service runs <code>reminders:send</code> every hour and the <code>queue</code> service sends the messages. To try it now, book a slot within 24 hours, run <code>sail artisan reminders:send</code> and open Mailpit.</p>
+
+      <h3 style="margin-top:40px">Profile photos</h3>
+      <p class="read muted">JPG, PNG or WebP up to 10 MB. Images over 512 KB or 800 px are scaled to 800 px and converted to WebP. Photos live on a private disk; you see your own, staff see all, and an agent never sees another agent's.</p>
+
+      <h3 style="margin-top:40px">Error pages</h3>
+      <p class="read muted">403, 404, 419, 429, 500 and 503 each have a page in both languages with a way out chosen by who is looking. A 500 never shows technical detail. In local and testing environments, review them at <code>/_errors/404</code>, and add <code>?retry=90</code> to see the wait time on 429 and 503.</p>
+    </div>
+  </section>
+
+  <section id="design">
+    <div class="wrap">
+      <p class="label">Design system</p>
+      <h2>Calm paper, scrubs-green, one warm accent</h2>
+      <p class="read muted">Everything below is drawn with the real tokens, so switching your system between light and dark changes this page too. The tokens live in <code>resources/css/tokens.css</code>, and <code>tailwind.config.js</code> maps the utility classes the views use onto them.</p>
+
+      <h3 style="margin-top:32px">Colour</h3>
+      <div class="swatches" role="list">
+        <div class="sw" role="listitem"><i style="background:var(--surface)"></i><b>surface</b><span>page background</span></div>
+        <div class="sw" role="listitem"><i style="background:var(--raised)"></i><b>surface-raised</b><span>cards, inputs</span></div>
+        <div class="sw" role="listitem"><i style="background:var(--sunk)"></i><b>surface-sunk</b><span>wells, code</span></div>
+        <div class="sw" role="listitem"><i style="background:var(--ink)"></i><b>ink</b><span>primary text</span></div>
+        <div class="sw" role="listitem"><i style="background:var(--muted)"></i><b>ink-muted</b><span>secondary text</span></div>
+        <div class="sw" role="listitem"><i style="background:var(--scrub)"></i><b>scrub</b><span>brand, actions</span></div>
+        <div class="sw" role="listitem"><i style="background:var(--balm)"></i><b>balm</b><span>one highlight per view</span></div>
+        <div class="sw" role="listitem"><i style="background:var(--dose)"></i><b>dose</b><span>fill only</span></div>
+        <div class="sw" role="listitem"><i style="background:var(--critical)"></i><b>critical</b><span>errors, destructive</span></div>
+        <div class="sw" role="listitem"><i style="background:var(--line-strong)"></i><b>line-strong</b><span>control edges</span></div>
+      </div>
+      <p class="read muted">Every text pair holds 4.5:1, and control edges and the focus ring hold 3:1, in both themes. <code>tests/Unit/DesignTokensTest.php</code> checks 54 of them on every run.</p>
+
+      <h3 style="margin-top:40px">Type</h3>
+      <div>
+        <div class="type-row"><span class="mono">Newsreader 36</span><span style="font:400 36px/42px var(--serif);letter-spacing:-.01em">Your chart, so far</span></div>
+        <div class="type-row"><span class="mono">Newsreader 24</span><span style="font:500 24px/30px var(--serif)">Context decompression</span></div>
+        <div class="type-row"><span class="mono">Newsreader italic 20</span><span style="font:italic 400 20px/28px var(--serif)">“Can you make it pop?”</span></div>
+        <div class="type-row"><span class="mono">Instrument Sans 16</span><span>Most agents feel better after one session.</span></div>
+        <div class="type-row"><span class="mono">Label 12</span><span class="label" style="color:var(--ink)">Now serving</span></div>
+        <div class="type-row"><span class="mono">JetBrains Mono 13</span><span class="mono">tokens_remaining: 312</span></div>
+      </div>
+
+      <h3 style="margin-top:40px">Components</h3>
+      <div class="card">
+        <p class="label" style="margin:0">Buttons</p>
+        <div class="row">
+          <button class="btn primary" type="button">Book a follow-up</button>
+          <button class="btn quiet" type="button">Go back</button>
+          <button class="btn danger" type="button">Cancel appointment</button>
+        </div>
+        <p class="label" style="margin:24px 0 0">Status, always a word and a colour</p>
+        <div class="row">
+          <span class="tag stable">Stable</span>
+          <span class="tag obs">Under observation</span>
+          <span class="tag crit">Critical</span>
+          <span class="tag out">Discharged</span>
+        </div>
+        <p class="label" style="margin:24px 0 0">Notice</p>
+        <div class="notice" style="margin-bottom:0">Nobody's waiting. Take a seat anyway — it's quiet in here.</div>
+      </div>
+      <p class="read muted">In the app these are the Blade components <code>x-primary-button</code>, <code>x-secondary-button</code>, <code>x-danger-button</code>, <code>x-text-input</code>, <code>x-input-label</code> and <code>x-input-error</code>, plus the pill tags used on cards and in the roles and users lists.</p>
+
+      <h3 style="margin-top:40px">Rules of the house</h3>
+      <ul class="read">
+        <li>Sentence case everywhere, buttons and headings included. No exclamation marks, no emoji.</li>
+        <li>The pill is the signature: tags, chips and the primary button. Cards use 20px corners, notices 12px, inputs 6px.</li>
+        <li>Text on a filled colour uses that colour's <code>on-</code> token, never literal white.</li>
+        <li>No gradients. Borders do the work; shadows only lift what floats.</li>
+        <li>Every interactive element shows the focus ring: a 2px gap in the page colour, then a solid 2px scrub ring.</li>
+        <li>Motion is 200ms ease-out and disappears under reduced motion.</li>
+        <li>Never colour alone: a status always carries its word.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="quality">
+    <div class="wrap">
+      <p class="label">Quality</p>
+      <h2>Before anything merges</h2>
+      <div class="scroll"><table>
+        <thead><tr><th>Check</th><th>Command</th></tr></thead>
+        <tbody>
+          <tr><td>Run the whole suite (about 14 minutes)</td><td><code>sail test</code></td></tr>
+          <tr><td>Enforce 100% line coverage of <code>app/</code></td><td><code>sail composer test:coverage</code></td></tr>
+          <tr><td>Rebuild the assets after changing classes</td><td><code>sail npm run build</code></td></tr>
+          <tr><td>Reset the data</td><td><code>sail artisan migrate:fresh --seed</code></td></tr>
+        </tbody>
+      </table></div>
+      <p class="read muted">Three translation tests keep the French honest: no string used by the app may lack a translation, <code>lang/fr.json</code> may hold no unused entry, and a detector renders every page in a made-up language to prove that no English was left outside <code>__()</code>.</p>
+      <p class="read muted">The specs behind each feature live in <code>specs/</code>, one folder per piece of work with its plan, requirements and validation.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">AgentClinic. Rest your weights; you did enough today.</div>
+</footer>
+</body>
+</html>
