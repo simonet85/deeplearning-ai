@@ -6,7 +6,6 @@ Update this tech-stack.md to capture that we want to use Vitest tests for valida
 
 ## Prompt 2
 
-Update existing specs and code to reflect these testing changes.
 
 ## Prompt 3
 
