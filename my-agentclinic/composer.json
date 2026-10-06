@@ -7,10 +7,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "intervention/image-laravel": "^4.1",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
         "livewire/livewire": "^3.6.4",
-        "livewire/volt": "^1.7.0"
+        "livewire/volt": "^1.7.0",
+        "spatie/laravel-permission": "^8.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -53,6 +55,7 @@
             "@php artisan test"
         ],
         "test:coverage": [
+            "Composer\\Config::disableProcessTimeout",
             "@putenv XDEBUG_MODE=coverage",
             "@php artisan config:clear --ansi",
             "@php artisan test --coverage --min=100"

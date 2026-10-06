@@ -13,7 +13,7 @@
     <ul style="padding-left: 16px;">
         <li><strong>{{ __('Therapy') }}:</strong> {{ $appointment->therapy->name }}</li>
         <li><strong>{{ __('Therapist') }}:</strong> {{ $appointment->therapist->name }}</li>
-        <li><strong>{{ __('When') }}:</strong> {{ $appointment->datetime->format('l, F j, Y \a\t H:i') }}</li>
+        <li><strong>{{ __('When') }}:</strong> {{ __(':date at :time', ['date' => $appointment->datetime->localized('long'), 'time' => $appointment->datetime->format('H:i')]) }}</li>
         <li><strong>{{ __('Duration') }}:</strong> {{ $appointment->therapy->duration }} {{ __('minutes') }}</li>
     </ul>
 

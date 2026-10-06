@@ -30,7 +30,7 @@ class SendAppointmentReminder implements ShouldQueue
             return;
         }
 
-        Mail::to($email)->send(new AppointmentReminder($appointment));
+        Mail::to($email)->locale($appointment->agent->mailLocale())->send(new AppointmentReminder($appointment));
 
         $appointment->update(['reminder_sent_at' => now()]);
     }

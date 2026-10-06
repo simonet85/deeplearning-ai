@@ -1,7 +1,9 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
@@ -10,6 +12,8 @@ new class extends Component
 {
     public string $name = '';
     public string $email = '';
+    public string $agent_type = '';
+    public string $bio = '';
 
     /**
      * Mount the component.
@@ -18,6 +22,12 @@ new class extends Component
     {
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
+
+        // Agent accounts also edit their agent record; staff have none.
+        if ($agent = Auth::user()->agent) {
+            $this->agent_type = $agent->agent_type;
+            $this->bio = (string) $agent->bio;
+        }
     }
 
     /**
@@ -26,19 +36,37 @@ new class extends Component
     public function updateProfileInformation(): void
     {
         $user = Auth::user();
+        $agent = $user->agent;
 
-        $validated = $this->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
-        ]);
+        ];
 
-        $user->fill($validated);
-
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
+        if ($agent) {
+            $rules['agent_type'] = ['required', 'string', 'max:255'];
+            $rules['bio'] = ['nullable', 'string', 'max:1000'];
         }
 
-        $user->save();
+        $validated = $this->validate($rules);
+
+        DB::transaction(function () use ($user, $agent, $validated) {
+            $user->fill(Arr::only($validated, ['name', 'email']));
+
+            if ($user->isDirty('email')) {
+                $user->email_verified_at = null;
+            }
+
+            $user->save();
+
+            // The agent record keeps the same name and e-mail, so confirmations and reminders follow the account.
+            $agent?->update([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'agent_type' => $validated['agent_type'],
+                'bio' => $validated['bio'] ?: null,
+            ]);
+        });
 
         $this->dispatch('profile-updated', name: $user->name);
     }
@@ -76,13 +104,13 @@ new class extends Component
     <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
         <div>
             <x-input-label for="name" :value="__('Name')" />
-            <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
+            <x-text-input wire:model="name" id="name" name="name" type="text" class="touch-target mt-1 block w-full" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="username" />
+            <x-text-input wire:model="email" id="email" name="email" type="email" class="touch-target mt-1 block w-full" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
@@ -103,6 +131,20 @@ new class extends Component
                 </div>
             @endif
         </div>
+
+        @if (auth()->user()->agent)
+            <div>
+                <x-input-label for="agent_type" :value="__('Agent type')" />
+                <x-text-input wire:model="agent_type" id="agent_type" name="agent_type" type="text" class="touch-target mt-1 block w-full" required />
+                <x-input-error class="mt-2" :messages="$errors->get('agent_type')" />
+            </div>
+
+            <div>
+                <x-input-label for="bio" :value="__('Bio')" />
+                <textarea wire:model="bio" id="bio" name="bio" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                <x-input-error class="mt-2" :messages="$errors->get('bio')" />
+            </div>
+        @endif
 
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>

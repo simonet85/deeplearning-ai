@@ -44,6 +44,21 @@ Shows stakeholders a working product immediately. Establishes UI patterns and br
 - [x] Appointment dashboard: view booked sessions
 - [x] Simple reporting: appointments by agent/therapy
 
+#### Agent Self-Service
+- [x] Agent self-registration (e-mail and password) with a linked agent record
+- [x] Agent area: record own ailments, book and cancel own appointments, edit own profile
+- [x] Data isolation: agents see only their own data and cannot open staff pages
+
+#### Access Management
+- [x] Roles and permissions managed with Spatie: roles, permissions per role, roles per user and individual permissions
+- [x] Administration pages for users and roles, with lock-out safeguards
+
+#### Internationalization and Error Pages
+- [x] English and French with automatic language detection, a switcher and a saved preference
+- [x] Everything translated: interface, validation messages, e-mails, dates and times
+- [x] Designed, bilingual error pages (403, 404, 419, 429, 500, 503)
+- [x] AgentClinic design system applied to every page, e-mail and error page, with a night theme
+
 #### Polish & Scale
 - [x] Appointment reminder notifications
 - [ ] Agent wellness scores/metrics

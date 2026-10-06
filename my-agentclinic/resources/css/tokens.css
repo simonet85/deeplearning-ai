@@ -1,0 +1,105 @@
+/*
+ * AgentClinic design tokens. Values come from the design system's tokens.json.
+ * Colours are stored as "R G B" channels so Tailwind can add opacity.
+ * Day ward is the default; Night shift follows the system setting.
+ */
+:root {
+    color-scheme: light;
+
+    --c-surface: 245 241 232;
+    --c-raised: 255 253 248;
+    --c-sunk: 235 229 216;
+    --c-line: 214 206 189;
+    --c-line-strong: 138 130 115;
+    --c-ink: 28 36 33;
+    --c-muted: 85 96 91;
+    --c-scrub: 29 102 86;
+    --c-scrub-hover: 22 82 69;
+    --c-scrub-soft: 217 236 228;
+    --c-balm: 168 74 28;
+    --c-balm-soft: 249 226 209;
+    --c-dose: 241 207 94;
+    --c-dose-soft: 251 240 196;
+    --c-dose-ink: 110 83 0;
+    --c-critical: 179 38 30;
+    --c-critical-soft: 250 220 216;
+
+    --shadow-card: 0 1px 2px rgba(28, 36, 33, 0.06), 0 4px 16px rgba(28, 36, 33, 0.06);
+    --shadow-float: 0 12px 40px rgba(28, 36, 33, 0.14);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+
+        --c-surface: 18 22 20;
+        --c-raised: 27 32 30;
+        --c-sunk: 12 15 14;
+        --c-line: 44 51 48;
+        --c-line-strong: 106 115 110;
+        --c-ink: 236 233 225;
+        --c-muted: 161 170 165;
+        --c-scrub: 108 203 178;
+        --c-scrub-hover: 139 216 196;
+        --c-scrub-soft: 18 48 42;
+        --c-balm: 241 154 104;
+        --c-balm-soft: 58 33 21;
+        --c-dose: 230 193 77;
+        --c-dose-soft: 51 41 10;
+        --c-dose-ink: 236 209 122;
+        --c-critical: 255 139 127;
+        --c-critical-soft: 59 22 18;
+
+        --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+        --shadow-float: 0 12px 40px rgba(0, 0, 0, 0.5);
+    }
+}
+
+@layer base {
+    html {
+        background-color: rgb(var(--c-surface));
+    }
+
+    body {
+        @apply bg-surface font-sans text-ink antialiased;
+    }
+
+    h1, h2, h3 {
+        @apply font-serif;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    summary:focus-visible,
+    [tabindex]:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 2px rgb(var(--c-surface)), 0 0 0 4px rgb(var(--c-scrub));
+    }
+
+    button:disabled,
+    [aria-disabled='true'] {
+        @apply cursor-not-allowed opacity-45;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        a, button, input, select, textarea {
+            transition: background-color 200ms ease-out, color 200ms ease-out, border-color 200ms ease-out, box-shadow 200ms ease-out;
+        }
+    }
+}
+
+@layer components {
+    input:not([type='checkbox'], [type='radio'], [type='file'], [type='range']),
+    select,
+    textarea {
+        @apply border-line-strong bg-surface-raised text-ink;
+    }
+
+    input[type='checkbox'],
+    input[type='radio'] {
+        @apply border-line-strong bg-surface-raised text-scrub;
+    }
+}

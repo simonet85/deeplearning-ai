@@ -1,7 +1,9 @@
 <?php
 
 use App\Livewire\Actions\Logout;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Volt\Component;
 
 new class extends Component
@@ -17,7 +19,14 @@ new class extends Component
             'password' => ['required', 'string', 'current_password'],
         ]);
 
-        tap(Auth::user(), $logout(...))->delete();
+        $user = Auth::user();
+
+        // The photo goes with the account, even though an agent's record and history stay with the clinic.
+        if ($user->profile_photo_path) {
+            Storage::disk(User::PHOTO_DISK)->delete($user->profile_photo_path);
+        }
+
+        tap($user, $logout(...))->delete();
 
         $this->redirect('/', navigate: true);
     }
@@ -32,6 +41,12 @@ new class extends Component
         <p class="mt-1 text-sm text-gray-600">
             {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
         </p>
+
+        @if (auth()->user()->agent)
+            <p class="mt-1 text-sm text-gray-600">
+                {{ __('Your agent record and your session history stay with the clinic, but you will no longer be able to sign in.') }}
+            </p>
+        @endif
     </header>
 
     <x-danger-button

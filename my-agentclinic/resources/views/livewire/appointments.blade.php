@@ -1,8 +1,7 @@
 <?php
 
-use App\Enums\AppointmentStatus;
-use App\Enums\Role;
-use App\Mail\AppointmentBooked;
+use App\Actions\BookAppointment;
+use App\Actions\CancelAppointment;
 use App\Models\Agent;
 use App\Models\Appointment;
 use App\Models\Availability;
@@ -10,9 +9,6 @@ use App\Models\Therapy;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Computed;
 use Livewire\Volt\Component;
 
@@ -55,7 +51,7 @@ new class extends Component
     #[Computed]
     public function therapists(): Collection
     {
-        return User::where('role', Role::Therapist)->orderBy('name')->get();
+        return User::permission('availability.manage')->orderBy('name')->get();
     }
 
     /** @return Collection<int, Appointment> */
@@ -93,36 +89,19 @@ new class extends Component
 
     public function book(): void
     {
+        abort_unless(auth()->user()->can('appointments.manage'), 403);
+
         $this->validate([
             'agentId' => ['required', 'exists:agents,id'],
             'therapyId' => ['required', 'exists:therapies,id'],
             'availabilityId' => ['required', 'exists:availability,id'],
         ]);
 
-        $appointment = DB::transaction(function () {
-            $slot = Availability::lockForUpdate()->findOrFail($this->availabilityId);
-
-            if ($slot->appointment()->exists() || $slot->startsAt()->isPast()) {
-                throw ValidationException::withMessages([
-                    'availabilityId' => __('That slot is no longer available.'),
-                ]);
-            }
-
-            return Appointment::create([
-                'agent_id' => $this->agentId,
-                'therapist_id' => $slot->therapist_id,
-                'therapy_id' => $this->therapyId,
-                'availability_id' => $slot->id,
-                'datetime' => $slot->startsAt(),
-                'status' => AppointmentStatus::Booked,
-            ]);
-        });
-
-        $agent = $appointment->agent;
-
-        if ($agent->email) {
-            Mail::to($agent->email)->send(new AppointmentBooked($appointment));
-        }
+        app(BookAppointment::class)->handle(
+            Agent::findOrFail($this->agentId),
+            Therapy::findOrFail($this->therapyId),
+            $this->availabilityId,
+        );
 
         $this->reset('agentId', 'therapyId', 'availabilityId');
         unset($this->openSlots, $this->upcoming, $this->past);
@@ -131,14 +110,9 @@ new class extends Component
 
     public function cancel(int $id): void
     {
-        $appointment = Appointment::findOrFail($id);
+        abort_unless(auth()->user()->can('appointments.manage'), 403);
 
-        if ($appointment->status === AppointmentStatus::Booked) {
-            $appointment->update([
-                'status' => AppointmentStatus::Cancelled,
-                'availability_id' => null,
-            ]);
-        }
+        app(CancelAppointment::class)->handle(Appointment::findOrFail($id));
 
         unset($this->openSlots, $this->upcoming, $this->past);
         $this->dispatch('appointments-changed');
@@ -146,6 +120,7 @@ new class extends Component
 }; ?>
 
 <div class="space-y-8">
+    @can('appointments.manage')
     <form wire:submit="book" class="grid gap-4 sm:grid-cols-3">
         <h3 class="text-lg font-semibold text-gray-800 sm:col-span-3">{{ __('Book an appointment') }}</h3>
 
@@ -176,7 +151,7 @@ new class extends Component
             <select id="availabilityId" wire:model="availabilityId" class="touch-target mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 <option value="">{{ __('Select a slot') }}</option>
                 @foreach ($this->openSlots as $slot)
-                    <option value="{{ $slot->id }}">{{ $slot->date->format('D, M j') }} · {{ $slot->time_slot }} · {{ $slot->therapist->name }}</option>
+                    <option value="{{ $slot->id }}">{{ $slot->date->localized('short') }} · {{ $slot->time_slot }} · {{ $slot->therapist->name }}</option>
                 @endforeach
             </select>
             <x-input-error :messages="$errors->get('availabilityId')" class="mt-2" />
@@ -186,6 +161,7 @@ new class extends Component
             <x-primary-button>{{ __('Book appointment') }}</x-primary-button>
         </div>
     </form>
+    @endcan
 
     <div class="grid gap-4 sm:grid-cols-4">
         <div>
@@ -231,14 +207,14 @@ new class extends Component
         <h3 class="text-lg font-semibold text-gray-800">{{ $heading }}</h3>
         <ul class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @forelse ($appointments as $appointment)
-                <li wire:key="appointment-{{ $appointment->id }}" class="rounded-lg border border-gray-200 p-4">
+                <li wire:key="appointment-{{ $appointment->id }}" class="rounded-lg border border-line bg-surface-raised p-4">
                     <div class="font-semibold text-gray-900">{{ $appointment->agent->name }}</div>
-                    <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $appointment->datetime->format('D, M j · H:i') }} · {{ ucfirst($appointment->status->value) }}</div>
+                    <div class="text-xs uppercase tracking-[0.08em] text-indigo-600">{{ $appointment->datetime->localized('datetime') }} · {{ __(ucfirst($appointment->status->value)) }}</div>
                     <p class="mt-2 text-sm text-gray-600">{{ $appointment->therapy->name }} {{ __('with') }} {{ $appointment->therapist->name }}</p>
                     @if ($appointment->reminder_sent_at)
-                        <p class="mt-1 text-xs text-gray-500">{{ __('Reminder sent') }} {{ $appointment->reminder_sent_at->format('M j, H:i') }}</p>
+                        <p class="mt-1 text-xs text-gray-500">{{ __('Reminder sent') }} {{ $appointment->reminder_sent_at->localized('stamp') }}</p>
                     @endif
-                    @if ($appointment->status === \App\Enums\AppointmentStatus::Booked)
+                    @if ($appointment->status === \App\Enums\AppointmentStatus::Booked && auth()->user()->can('appointments.manage'))
                         <div class="mt-3">
                             <x-secondary-button type="button" wire:click="cancel({{ $appointment->id }})" wire:confirm="{{ __('Cancel this appointment?') }}">{{ __('Cancel') }}</x-secondary-button>
                         </div>

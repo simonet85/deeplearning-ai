@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Enums\Role;
 use App\Models\Agent;
 use App\Models\Ailment;
 use App\Models\Availability;
@@ -19,8 +18,8 @@ class SeederTest extends TestCase
     {
         $this->seed();
 
-        $this->assertSame(1, User::where('role', Role::Admin)->count());
-        $this->assertSame(2, User::where('role', Role::Therapist)->count());
+        $this->assertSame(1, User::role('admin')->count());
+        $this->assertSame(2, User::role('therapist')->count());
         $this->assertGreaterThanOrEqual(5, Agent::count());
         $this->assertGreaterThanOrEqual(3, Ailment::count());
         $this->assertGreaterThanOrEqual(3, Therapy::count());

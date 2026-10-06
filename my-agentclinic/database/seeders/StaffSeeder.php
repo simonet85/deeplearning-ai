@@ -17,7 +17,7 @@ class StaffSeeder extends Seeder
         ];
 
         foreach ($staff as [$name, $email, $role]) {
-            User::factory()->create(['name' => $name, 'email' => $email, 'role' => $role]);
+            User::factory()->create(['name' => $name, 'email' => $email])->syncRoles($role->value);
         }
     }
 }

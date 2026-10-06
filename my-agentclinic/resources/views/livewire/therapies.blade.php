@@ -74,7 +74,7 @@ new class extends Component
 
     public function save(): void
     {
-        abort_unless(auth()->user()->isAdmin(), 403);
+        abort_unless(auth()->user()->can('therapies.manage'), 403);
 
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255', Rule::unique('therapies', 'name')->ignore($this->editingId)],
@@ -99,7 +99,7 @@ new class extends Component
 
     public function edit(int $id): void
     {
-        abort_unless(auth()->user()->isAdmin(), 403);
+        abort_unless(auth()->user()->can('therapies.manage'), 403);
 
         $therapy = Therapy::with('ailments')->findOrFail($id);
 
@@ -113,7 +113,7 @@ new class extends Component
 
     public function delete(int $id): void
     {
-        abort_unless(auth()->user()->isAdmin(), 403);
+        abort_unless(auth()->user()->can('therapies.manage'), 403);
 
         Therapy::findOrFail($id)->delete();
 
@@ -133,7 +133,7 @@ new class extends Component
 }; ?>
 
 <div class="space-y-8">
-    @if (auth()->user()->isAdmin())
+    @if (auth()->user()->can('therapies.manage'))
         <form wire:submit="save" class="grid gap-4 sm:grid-cols-2">
             <h3 class="text-lg font-semibold text-gray-800 sm:col-span-2">
                 {{ $editingId ? __('Edit therapy') : __('Add a therapy') }}
@@ -226,9 +226,9 @@ new class extends Component
         <h3 class="text-lg font-semibold text-gray-800">{{ __('Therapy catalog') }}</h3>
         <ul class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @forelse ($this->therapies as $therapy)
-                <li wire:key="therapy-{{ $therapy->id }}" class="rounded-lg border border-gray-200 p-4">
+                <li wire:key="therapy-{{ $therapy->id }}" class="rounded-lg border border-line bg-surface-raised p-4">
                     <div class="font-semibold text-gray-900">{{ $therapy->name }}</div>
-                    <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $therapy->type }} · {{ $therapy->duration }} {{ __('min') }}</div>
+                    <div class="text-xs uppercase tracking-[0.08em] text-indigo-600">{{ $therapy->type }} · {{ $therapy->duration }} {{ __('min') }}</div>
                     <p class="mt-2 text-sm text-gray-600">{{ $therapy->description }}</p>
                     <p class="mt-2 text-sm font-medium text-gray-700">
                         @if ($therapy->ratings_count > 0)
@@ -240,7 +240,7 @@ new class extends Component
                     @if ($therapy->ailments->isNotEmpty())
                         <p class="mt-2 text-xs text-gray-500">{{ __('Treats:') }} {{ $therapy->ailments->pluck('name')->sort()->join(', ') }}</p>
                     @endif
-                    @if (auth()->user()->isAdmin())
+                    @if (auth()->user()->can('therapies.manage'))
                         <div class="mt-3 flex gap-2">
                             <x-secondary-button type="button" wire:click="edit({{ $therapy->id }})">{{ __('Edit') }}</x-secondary-button>
                             <x-danger-button type="button" wire:click="delete({{ $therapy->id }})" wire:confirm="{{ __('Delete this therapy?') }}">{{ __('Delete') }}</x-danger-button>

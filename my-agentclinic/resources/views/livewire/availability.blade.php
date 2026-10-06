@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\Role;
 use App\Models\Availability;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -20,7 +19,7 @@ new class extends Component
     #[Computed]
     public function therapists(): Collection
     {
-        return User::where('role', Role::Therapist)->orderBy('name')->get();
+        return User::permission('availability.manage')->orderBy('name')->get();
     }
 
     /** @return Collection<int, Availability> */
@@ -28,7 +27,7 @@ new class extends Component
     public function slots(): Collection
     {
         return Availability::with(['therapist', 'appointment'])
-            ->when(! auth()->user()->isAdmin(), fn ($query) => $query->where('therapist_id', auth()->id()))
+            ->when(! auth()->user()->can('availability.manage-all'), fn ($query) => $query->where('therapist_id', auth()->id()))
             ->orderBy('date')
             ->orderBy('time_slot')
             ->orderBy('therapist_id')
@@ -37,13 +36,15 @@ new class extends Component
 
     public function save(): void
     {
-        $therapistId = auth()->user()->isAdmin() ? $this->therapistId : auth()->id();
+        abort_unless(auth()->user()->canAny(['availability.manage', 'availability.manage-all']), 403);
+
+        $therapistId =auth()->user()->can('availability.manage-all') ? $this->therapistId : auth()->id();
 
         $validated = $this->validate([
             'therapistId' => [
-                Rule::requiredIf(auth()->user()->isAdmin()),
+                Rule::requiredIf(auth()->user()->can('availability.manage-all')),
                 'nullable',
-                Rule::exists('users', 'id')->where('role', Role::Therapist->value),
+                Rule::exists('users', 'id')->whereIn('id', User::permission('availability.manage')->select('users.id')),
             ],
             'date' => ['required', 'date', 'after_or_equal:today'],
             'timeSlot' => [
@@ -69,7 +70,12 @@ new class extends Component
     {
         $slot = Availability::findOrFail($id);
 
-        abort_unless(auth()->user()->isAdmin() || $slot->therapist_id === auth()->id(), 403);
+        $user = auth()->user();
+
+        abort_unless(
+            $user->can('availability.manage-all') || ($user->can('availability.manage') && $slot->therapist_id === $user->id),
+            403,
+        );
 
         if ($slot->appointment()->exists()) {
             $this->addError('slot', __('This slot has a booked appointment. Cancel it first.'));
@@ -83,8 +89,9 @@ new class extends Component
 }; ?>
 
 <div class="space-y-8">
+    @canany(['availability.manage', 'availability.manage-all'])
     <form wire:submit="save" class="grid gap-4 sm:grid-cols-3">
-        @if (auth()->user()->isAdmin())
+        @if (auth()->user()->can('availability.manage-all'))
             <div class="sm:col-span-3">
                 <x-input-label for="therapistId" :value="__('Therapist')" />
                 <select id="therapistId" wire:model="therapistId" class="touch-target mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -113,6 +120,7 @@ new class extends Component
             <x-primary-button>{{ __('Add slot') }}</x-primary-button>
         </div>
     </form>
+    @endcanany
 
     <div>
         <h3 class="text-lg font-semibold text-gray-800">{{ __('Availability calendar') }}</h3>
@@ -120,17 +128,17 @@ new class extends Component
         <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @forelse ($this->slots->groupBy(fn ($slot) => $slot->date->toDateString()) as $day => $daySlots)
                 <section wire:key="day-{{ $day }}" class="rounded-lg border border-gray-200">
-                    <h4 class="border-b border-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-800">{{ $daySlots->first()->date->format('D, M j') }}</h4>
+                    <h4 class="border-b border-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-800">{{ $daySlots->first()->date->localized('short') }}</h4>
                     <ul class="divide-y divide-gray-100">
                         @foreach ($daySlots as $slot)
                             <li wire:key="slot-{{ $slot->id }}" class="flex items-center justify-between gap-2 px-4 py-3">
                                 <div>
                                     <div class="font-semibold text-gray-900">{{ $slot->time_slot }}</div>
-                                    <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $slot->therapist->name }}</div>
+                                    <div class="text-xs uppercase tracking-[0.08em] text-indigo-600">{{ $slot->therapist->name }}</div>
                                 </div>
                                 @if ($slot->appointment)
-                                    <span class="rounded bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">{{ __('Booked') }}</span>
-                                @else
+                                    <span class="rounded-full bg-scrub-soft px-2.5 py-0.5 text-xs font-semibold text-scrub">{{ __('Booked') }}</span>
+                                @elseif (auth()->user()->canAny(['availability.manage', 'availability.manage-all']))
                                     <x-danger-button type="button" wire:click="remove({{ $slot->id }})" wire:confirm="{{ __('Remove this slot?') }}">{{ __('Remove') }}</x-danger-button>
                                 @endif
                             </li>
