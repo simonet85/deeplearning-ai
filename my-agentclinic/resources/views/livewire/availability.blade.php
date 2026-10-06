@@ -134,10 +134,10 @@ new class extends Component
                             <li wire:key="slot-{{ $slot->id }}" class="flex items-center justify-between gap-2 px-4 py-3">
                                 <div>
                                     <div class="font-semibold text-gray-900">{{ $slot->time_slot }}</div>
-                                    <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $slot->therapist->name }}</div>
+                                    <div class="text-xs uppercase tracking-[0.08em] text-indigo-600">{{ $slot->therapist->name }}</div>
                                 </div>
                                 @if ($slot->appointment)
-                                    <span class="rounded bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">{{ __('Booked') }}</span>
+                                    <span class="rounded-full bg-scrub-soft px-2.5 py-0.5 text-xs font-semibold text-scrub">{{ __('Booked') }}</span>
                                 @elseif (auth()->user()->canAny(['availability.manage', 'availability.manage-all']))
                                     <x-danger-button type="button" wire:click="remove({{ $slot->id }})" wire:confirm="{{ __('Remove this slot?') }}">{{ __('Remove') }}</x-danger-button>
                                 @endif

@@ -94,3 +94,7 @@ A reminder e-mail goes to the agent about 24 hours before a booked appointment (
 To try it right away, book an appointment that starts within 24 hours (or create one with a factory), run `sail artisan reminders:send`, and open http://localhost:8025: the reminder arrives within a few seconds and the appointment card shows "Reminder sent". Follow the services with `sail logs -f queue scheduler`.
 
 Tests: `sail test` runs the PHPUnit suite (feature, Livewire component and unit tests) against a separate `testing` database. `sail composer test:coverage` enforces 100% line coverage of `app/`. Both must pass before merging.
+
+## Look and feel
+
+The interface follows the AgentClinic design system: warm paper (`surface`), scrubs-green (`scrub`) for actions, one balm accent, pill buttons and tags, Newsreader for headings and Instrument Sans for the interface (both self-hosted through `@fontsource`). The tokens live in `resources/css/tokens.css` as CSS variables; the night theme follows the system setting (`prefers-color-scheme`). `tailwind.config.js` maps the utility families the views already use (`gray`, `indigo`, `red`, `white`) onto those tokens, so a page follows the theme without per-class changes. `tests/Unit/DesignTokensTest.php` checks the contrast of every text pair in both themes. E-mails use the same colours in a light theme (`resources/views/vendor/mail`).

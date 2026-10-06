@@ -124,8 +124,8 @@ new class extends Component
         <h3 class="text-lg font-semibold text-gray-800">{{ $heading }}</h3>
         <ul class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @forelse ($appointments as $appointment)
-                <li wire:key="appointment-{{ $appointment->id }}" class="rounded-lg border border-gray-200 p-4">
-                    <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $appointment->datetime->localized('datetime') }} · {{ __(ucfirst($appointment->status->value)) }}</div>
+                <li wire:key="appointment-{{ $appointment->id }}" class="rounded-lg border border-line bg-surface-raised p-4">
+                    <div class="text-xs uppercase tracking-[0.08em] text-indigo-600">{{ $appointment->datetime->localized('datetime') }} · {{ __(ucfirst($appointment->status->value)) }}</div>
                     <p class="mt-2 text-sm text-gray-600">{{ $appointment->therapy->name }} {{ __('with') }} {{ $appointment->therapist->name }}</p>
                     @if ($appointment->reminder_sent_at)
                         <p class="mt-1 text-xs text-gray-500">{{ __('Reminder sent') }} {{ $appointment->reminder_sent_at->localized('stamp') }}</p>

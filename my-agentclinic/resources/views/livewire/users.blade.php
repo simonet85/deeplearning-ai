@@ -142,7 +142,7 @@ new class extends Component
         @forelse ($this->users as $user)
             @php($own = $user->is(auth()->user()))
             @php($currentRole = $user->roles->first())
-            <li wire:key="user-{{ $user->id }}" class="rounded-lg border border-gray-200 p-4">
+            <li wire:key="user-{{ $user->id }}" class="rounded-lg border border-line bg-surface-raised p-4">
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div class="flex min-w-0 items-center gap-3">
                         <x-avatar :user="$user" class="h-10 w-10 shrink-0" />
@@ -151,7 +151,7 @@ new class extends Component
                             <div class="truncate text-sm text-gray-500">{{ $user->email }}</div>
                         </div>
                         @if ($user->agent)
-                            <span class="rounded bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">{{ __('Agent record') }}</span>
+                            <span class="rounded-full bg-scrub-soft px-2.5 py-0.5 text-xs font-semibold text-scrub">{{ __('Agent record') }}</span>
                         @endif
                     </div>
 
@@ -184,7 +184,7 @@ new class extends Component
                         <div class="mt-3 grid gap-4 sm:grid-cols-2">
                             @foreach (\App\Support\Access::grouped() as $group => $permissions)
                                 <fieldset wire:key="user-{{ $user->id }}-{{ $group }}">
-                                    <legend class="text-xs font-semibold uppercase tracking-wide text-indigo-600">{{ __($group) }}</legend>
+                                    <legend class="text-xs font-semibold uppercase tracking-[0.08em] text-indigo-600">{{ __($group) }}</legend>
                                     @foreach ($permissions as $name => $label)
                                         @php($fromRole = in_array($name, $viaRole, true))
                                         <label class="touch-target flex items-center gap-2 text-sm text-gray-700">

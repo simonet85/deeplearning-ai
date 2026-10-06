@@ -54,13 +54,13 @@ new class extends Component
 
     <ul class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         @forelse ($this->agents as $agent)
-            <li wire:key="agent-{{ $agent->id }}" class="rounded-lg border border-gray-200 p-4">
+            <li wire:key="agent-{{ $agent->id }}" class="rounded-lg border border-line bg-surface-raised p-4">
                 @php($owner = $agent->user)
                 <div class="flex items-center gap-3">
                     <x-avatar :user="$owner" :name="$agent->name" class="h-10 w-10 shrink-0" />
                     <div class="min-w-0">
                         <div class="font-semibold text-gray-900">{{ $agent->name }}</div>
-                        <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $agent->agent_type }}</div>
+                        <div class="text-xs uppercase tracking-[0.08em] text-indigo-600">{{ $agent->agent_type }}</div>
                     </div>
                 </div>
                 <p class="mt-2 text-sm text-gray-600">{{ $agent->bio }}</p>

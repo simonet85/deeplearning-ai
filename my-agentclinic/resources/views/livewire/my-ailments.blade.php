@@ -92,9 +92,9 @@ new class extends Component
         <h3 class="text-lg font-semibold text-gray-800">{{ __('Your ailments') }}</h3>
         <ul class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @forelse ($this->records as $record)
-                <li wire:key="record-{{ $record->id }}" class="rounded-lg border border-gray-200 p-4">
+                <li wire:key="record-{{ $record->id }}" class="rounded-lg border border-line bg-surface-raised p-4">
                     <div class="font-semibold text-gray-900">{{ $record->ailment->name }}</div>
-                    <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $record->severity }}/{{ $record->ailment->severity_scale }} · {{ $record->created_at->localized('day') }}</div>
+                    <div class="text-xs uppercase tracking-[0.08em] text-indigo-600">{{ $record->severity }}/{{ $record->ailment->severity_scale }} · {{ $record->created_at->localized('day') }}</div>
                     @if ($record->notes)
                         <p class="mt-2 text-sm text-gray-600">{{ $record->notes }}</p>
                     @endif

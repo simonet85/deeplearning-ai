@@ -50,7 +50,7 @@ new class extends Component
 
     <div class="mt-4 grid gap-6 sm:grid-cols-2">
         <div>
-            <h4 class="text-sm font-semibold uppercase tracking-wide text-indigo-600">{{ __('By agent') }}</h4>
+            <h4 class="text-sm font-semibold uppercase tracking-[0.08em] text-indigo-600">{{ __('By agent') }}</h4>
             <ul class="mt-2 divide-y divide-gray-100 text-sm">
                 @forelse ($this->byAgent as $agent)
                     <li wire:key="report-agent-{{ $agent->id }}" class="flex justify-between py-2">
@@ -64,7 +64,7 @@ new class extends Component
         </div>
 
         <div>
-            <h4 class="text-sm font-semibold uppercase tracking-wide text-indigo-600">{{ __('By therapy') }}</h4>
+            <h4 class="text-sm font-semibold uppercase tracking-[0.08em] text-indigo-600">{{ __('By therapy') }}</h4>
             <ul class="mt-2 divide-y divide-gray-100 text-sm">
                 @forelse ($this->byTherapy as $therapy)
                     <li wire:key="report-therapy-{{ $therapy->id }}" class="flex justify-between py-2">

@@ -226,9 +226,9 @@ new class extends Component
         <h3 class="text-lg font-semibold text-gray-800">{{ __('Therapy catalog') }}</h3>
         <ul class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @forelse ($this->therapies as $therapy)
-                <li wire:key="therapy-{{ $therapy->id }}" class="rounded-lg border border-gray-200 p-4">
+                <li wire:key="therapy-{{ $therapy->id }}" class="rounded-lg border border-line bg-surface-raised p-4">
                     <div class="font-semibold text-gray-900">{{ $therapy->name }}</div>
-                    <div class="text-xs uppercase tracking-wide text-indigo-600">{{ $therapy->type }} · {{ $therapy->duration }} {{ __('min') }}</div>
+                    <div class="text-xs uppercase tracking-[0.08em] text-indigo-600">{{ $therapy->type }} · {{ $therapy->duration }} {{ __('min') }}</div>
                     <p class="mt-2 text-sm text-gray-600">{{ $therapy->description }}</p>
                     <p class="mt-2 text-sm font-medium text-gray-700">
                         @if ($therapy->ratings_count > 0)

@@ -186,7 +186,7 @@ new class extends Component
 
         @foreach ($this->roles as $role)
             @php($builtIn = \App\Support\Access::isBuiltIn($role->name))
-            <section wire:key="role-{{ $role->id }}" class="rounded-lg border border-gray-200 p-4">
+            <section wire:key="role-{{ $role->id }}" class="rounded-lg border border-line bg-surface-raised p-4">
                 <header class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex flex-wrap items-center gap-2">
                         @if ($renamingId === $role->id)
@@ -200,7 +200,7 @@ new class extends Component
                         @endif
 
                         @if ($builtIn)
-                            <span class="rounded bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">{{ __('Built-in') }}</span>
+                            <span class="rounded-full bg-scrub-soft px-2.5 py-0.5 text-xs font-semibold text-scrub">{{ __('Built-in') }}</span>
                         @endif
                         <span class="text-xs text-gray-500">{{ trans_choice(':count user|:count users', $role->users_count) }}</span>
                     </div>
@@ -219,7 +219,7 @@ new class extends Component
                 <div class="mt-4 grid gap-4 sm:grid-cols-2">
                     @foreach (\App\Support\Access::grouped() as $group => $permissions)
                         <fieldset wire:key="role-{{ $role->id }}-{{ $group }}">
-                            <legend class="text-xs font-semibold uppercase tracking-wide text-indigo-600">{{ __($group) }}</legend>
+                            <legend class="text-xs font-semibold uppercase tracking-[0.08em] text-indigo-600">{{ __($group) }}</legend>
                             @foreach ($permissions as $name => $label)
                                 @php($locked = $role->name === 'admin' && in_array($name, \App\Support\Access::ADMIN_LOCKED, true))
                                 <label class="touch-target flex items-center gap-2 text-sm text-gray-700">

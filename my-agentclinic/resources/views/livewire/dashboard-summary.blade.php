@@ -29,16 +29,16 @@ new class extends Component
 }; ?>
 
 <dl class="grid gap-4 sm:grid-cols-3">
-    <div class="rounded-lg border border-gray-200 p-4">
-        <dt class="text-xs uppercase tracking-wide text-indigo-600">{{ __('Upcoming sessions') }}</dt>
+    <div class="rounded-lg border border-line bg-surface-raised p-4">
+        <dt class="text-xs uppercase tracking-[0.08em] text-indigo-600">{{ __('Upcoming sessions') }}</dt>
         <dd class="mt-1 text-2xl font-semibold text-gray-900">{{ $this->upcomingCount }}</dd>
     </div>
-    <div class="rounded-lg border border-gray-200 p-4">
-        <dt class="text-xs uppercase tracking-wide text-indigo-600">{{ __('Open slots') }}</dt>
+    <div class="rounded-lg border border-line bg-surface-raised p-4">
+        <dt class="text-xs uppercase tracking-[0.08em] text-indigo-600">{{ __('Open slots') }}</dt>
         <dd class="mt-1 text-2xl font-semibold text-gray-900">{{ $this->openSlotCount }}</dd>
     </div>
-    <div class="rounded-lg border border-gray-200 p-4">
-        <dt class="text-xs uppercase tracking-wide text-indigo-600">{{ __('Patients') }}</dt>
+    <div class="rounded-lg border border-line bg-surface-raised p-4">
+        <dt class="text-xs uppercase tracking-[0.08em] text-indigo-600">{{ __('Patients') }}</dt>
         <dd class="mt-1 text-2xl font-semibold text-gray-900">{{ $this->agentCount }}</dd>
     </div>
 </dl>

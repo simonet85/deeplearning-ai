@@ -70,7 +70,7 @@ new class extends Component
         <div class="space-y-2">
             <x-input-label for="photo" :value="__('Choose a photo')" />
             <input wire:model="photo" id="photo" name="photo" type="file" accept="image/png,image/jpeg,image/webp"
-                   class="touch-target block w-full text-sm text-gray-700 file:me-3 file:rounded-md file:border-0 file:bg-gray-800 file:px-3 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-widest file:text-white hover:file:bg-gray-700">
+                   class="touch-target block w-full text-sm text-gray-700 file:me-3 file:rounded-full file:border-0 file:bg-scrub file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-scrub-hover">
             <p wire:loading wire:target="photo" class="text-sm text-gray-500">{{ __('Uploading…') }}</p>
             <x-input-error class="mt-2" :messages="$errors->get('photo')" />
         </div>

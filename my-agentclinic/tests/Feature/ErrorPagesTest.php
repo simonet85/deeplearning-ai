@@ -123,7 +123,7 @@ class ErrorPagesTest extends TestCase
 
     private function links(string $html): array
     {
-        preg_match_all('#<a href="([^"]*)"[^>]*class="[^"]*(?:bg-indigo-600|border-gray-300)[^"]*">([^<]*)</a>#', $html, $matches, PREG_SET_ORDER);
+        preg_match_all('#<a href="([^"]*)"[^>]*class="[^"]*(?:bg-scrub|border-line-strong)[^"]*">([^<]*)</a>#', $html, $matches, PREG_SET_ORDER);
 
         return array_map(fn (array $m) => [html_entity_decode($m[2]), html_entity_decode($m[1])], $matches);
     }
